@@ -23,3 +23,26 @@
   collaboration:
     title: FG-MoE 研究记录
     url: /posts/fg-moe/
+
+# Photo, biography and roommate relationship supplied by the blog owner.
+# English author name verified on the linked publisher page; journal metric year was not supplied.
+- name: 唐治江
+  english_name: Zhijiang Tang
+  monogram: ZT
+  photo: /assets/img/friends/tang-zhijiang.png
+  photo_width: 1080
+  photo_height: 1440
+  relationship: 室友
+  description: 我的室友，关注时序预测、医学影像分析与 AI for Science。
+  biography: |
+    现为中国科学院大学人工智能专业硕士研究生，本科毕业于南开大学`数据科学与大数据技术`专业，南开大学2024届优秀毕业生。
+
+    本科期间主持《深度学习在儿童血管影像的应用研究》优秀科研项目，入选2022年南开大学“国家级大学生创新创业训练计划”，获得第十八届“挑战杯”全国大学生课外学术科技作品竞赛国家二等奖。曾获得2022高教社杯全国大学生数学建模竞赛国家二等奖、2022 Asia and Pacific Mathematical Contest in Modeling Certificate of Achievement First Prize等奖项。
+
+    已发表论文1篇：[Radiation reduction for interventional radiology imaging: a video frame interpolation solution](https://insightsimaging.springeropen.com/articles/10.1186/s13244-024-01620-z)。原介绍标注为 SCI 二区、IF=4.7，未注明指标年份。
+  interests:
+    - 时序预测
+    - 医学影像分析
+    - AI for Science
+  homepage: https://son4ta.github.io/Friend/
+  homepage_label: 查看原友链介绍

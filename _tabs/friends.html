@@ -27,7 +27,8 @@ order: 5
         {% if friend.biography %}<div class="atlas-friend-bio">{{ friend.biography | markdownify }}</div>{% endif %}
         <ul class="atlas-friend-interests" aria-label="{{ friend.name | escape }}关注的方向">{% for interest in friend.interests %}<li>{{ interest | escape }}</li>{% endfor %}</ul>
         <div class="atlas-friend-links">
-          <a href="{{ friend.homepage | escape }}" aria-label="访问{{ friend.name | escape }}的个人主页">访问个人主页 {% include atlas-icon.html name='external' %}</a>
+          {% assign friend_link_label = friend.homepage_label | default: '访问个人主页' %}
+          <a href="{{ friend.homepage | escape }}" aria-label="{{ friend.name | escape }}：{{ friend_link_label | escape }}">{{ friend_link_label | escape }} {% include atlas-icon.html name='external' %}</a>
           {% if friend.collaboration %}<a href="{{ friend.collaboration.url | relative_url }}">{{ friend.collaboration.title | escape }} {% include atlas-icon.html name='arrow' %}</a>{% endif %}
         </div>
       </div>
