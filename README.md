@@ -1,3 +1,14 @@
+# hlcy-404 个人博客
+
+本仓库使用 Jekyll + Chirpy，发布地址为 https://hlcy-404.github.io/ 。
+
+- 本地开发与同步说明：[docs/LOCAL-DEVELOPMENT.md](docs/LOCAL-DEVELOPMENT.md)
+- Windows 手动提交并同步：双击 `sync.cmd`，核对清单后输入 `y`。
+- 本地预览：启动 Docker Desktop 后双击 `preview.cmd`，等待构建完成，访问 http://127.0.0.1:4000 。
+- 停止预览：双击 `stop-preview.cmd`。
+
+以下保留原始模板说明。
+
 # Chirpy Starter
 
 [![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)][gem]&nbsp;

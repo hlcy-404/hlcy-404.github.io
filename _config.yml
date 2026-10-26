@@ -214,6 +214,9 @@ exclude:
   - LICENSE
   - "*.config.js"
   - package*.json
+  - AGENTS.md
+  - compose.yaml
+  - "*.cmd"
 
 jekyll-archives:
   enabled: [categories, tags]

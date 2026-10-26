@@ -25,3 +25,16 @@ package-lock.json
 # Misc
 _sass/dist
 assets/js/dist
+
+# Local-only settings, secrets and temporary files
+.local/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+Thumbs.db
+.DS_Store
