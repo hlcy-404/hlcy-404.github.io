@@ -156,17 +156,18 @@ body:not(.atlas-home) .content a { text-underline-offset: 4px; }
 .atlas-friends { max-width: 850px; }
 .atlas-friends .atlas-friends-kicker { margin: 12px 0 18px; font-size: 10px; letter-spacing: .16em; color: var(--atlas-sage); }
 .atlas-friends-intro { color: var(--atlas-muted); margin-bottom: 32px; }
-.atlas-friend { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 28px; padding: 32px 0; border-top: 1px solid var(--atlas-line); }
+.atlas-friend { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 28px; padding: 32px 0; border-top: 1px solid var(--atlas-line); }
+.atlas-friend-identity { min-width: 0; align-self: start; }
 .atlas-friend-portrait { align-self: start; }
 .atlas-friend-portrait img { display: block; width: 100%; height: auto; border-radius: 3px; }
 .atlas-friend-mark { position: relative; display: grid; place-items: center; align-self: start; aspect-ratio: 1; border: 1px solid var(--atlas-line); background: var(--atlas-tint); color: var(--atlas-sage); }
 .atlas-friend-mark > span { font: italic 29px var(--atlas-serif); }
 .atlas-friend-mark > small { position: absolute; right: 8px; bottom: 3px; font-size: 9px; }
 .atlas-friend .atlas-friend-relation { margin: 0 0 3px; color: var(--atlas-sage); font-size: 11px; letter-spacing: .08em; }
-.atlas-friend h2 { margin: 0; padding: 0; font-size: 27px; line-height: 1.4; }
-.atlas-friend .atlas-friend-english { margin: 5px 0 17px; font: 16px/1.5 var(--atlas-serif); color: var(--atlas-muted); }
-.atlas-friend-description { margin-bottom: 16px; }
-.atlas-friend-bio { margin: 22px 0; font-size: 14px; line-height: 1.95; overflow-wrap: anywhere; }
+.atlas-friend h2 { margin: 16px 0 0; padding: 0; font-size: 23px; line-height: 1.4; }
+.atlas-friend .atlas-friend-english { margin: 5px 0 10px; font: 14px/1.5 var(--atlas-serif); color: var(--atlas-muted); }
+.atlas-friend-description { margin: 0 0 18px; font-size: 14px; color: var(--atlas-sage); }
+.atlas-friend-bio { margin: 0 0 22px; font-size: 14px; line-height: 1.95; overflow-wrap: anywhere; }
 .atlas-friend-bio p { margin-bottom: 18px; }
 .atlas-friend-bio code { white-space: normal; }
 .atlas-friend .atlas-friend-interests { display: flex; flex-wrap: wrap; gap: 7px; list-style: none; margin: 0 0 21px; padding: 0; }
@@ -177,10 +178,12 @@ body:not(.atlas-home) .content a { text-underline-offset: 4px; }
 .atlas-friends .atlas-friends-note { border-top: 1px solid var(--atlas-line); margin: 7px 0 0; padding-top: 22px; font-size: 13px; color: var(--atlas-muted); }
 @media (max-width: 640px) {
   .atlas-friend { grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 25px 0; }
+  .atlas-friend-identity { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 0 20px; align-items: start; }
+  .atlas-friend-portrait { grid-row: 1 / 4; }
   .atlas-friend-mark { width: 72px; }
   .atlas-friend-portrait { width: 120px; }
   .atlas-friend-mark > span { font-size: 23px; }
-  .atlas-friend h2 { font-size: 25px; }
+  .atlas-friend h2 { font-size: 22px; margin-top: 0; }
   .atlas-friends-intro { font-size: 14px; }
 }
 @media (min-width: 850px) { body:not(.atlas-home) #main-wrapper { margin-left: var(--atlas-sidebar); } }

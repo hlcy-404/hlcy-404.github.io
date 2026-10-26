@@ -13,14 +13,16 @@ order: 5
   <div class="atlas-friends-list">
     {% for friend in site.data.friends %}
     <section class="atlas-friend" aria-labelledby="friend-{{ forloop.index }}">
-      <div class="atlas-friend-portrait">
-        {% if friend.photo %}<img src="{{ friend.photo | relative_url }}" width="{{ friend.photo_width }}" height="{{ friend.photo_height }}" alt="{{ friend.name | escape }}的肖像" loading="lazy">
-        {% else %}<div class="atlas-friend-mark" aria-hidden="true"><span>{{ friend.monogram | escape }}</span><small>{{ forloop.index | prepend: '0' }}</small></div>{% endif %}
-      </div>
-      <div class="atlas-friend-body">
-        <p class="atlas-friend-relation">{{ friend.relationship | escape }}</p>
+      <div class="atlas-friend-identity">
+        <div class="atlas-friend-portrait" style="max-width: 180px;">
+          {% if friend.photo %}<img src="{{ friend.photo | relative_url }}" width="{{ friend.photo_width }}" height="{{ friend.photo_height }}" style="width: 100%; max-width: 180px; height: auto;" alt="{{ friend.name | escape }}的肖像" loading="lazy">
+          {% else %}<div class="atlas-friend-mark" aria-hidden="true"><span>{{ friend.monogram | escape }}</span><small>{{ forloop.index | prepend: '0' }}</small></div>{% endif %}
+        </div>
         <h2 id="friend-{{ forloop.index }}">{{ friend.name | escape }}</h2>
         <p class="atlas-friend-english">{{ friend.english_name | escape }}</p>
+        <p class="atlas-friend-relation">{{ friend.relationship | escape }}</p>
+      </div>
+      <div class="atlas-friend-body">
         <p class="atlas-friend-description">{{ friend.description | escape }}</p>
         {% if friend.biography %}<div class="atlas-friend-bio">{{ friend.biography | markdownify }}</div>{% endif %}
         <ul class="atlas-friend-interests" aria-label="{{ friend.name | escape }}关注的方向">{% for interest in friend.interests %}<li>{{ interest | escape }}</li>{% endfor %}</ul>

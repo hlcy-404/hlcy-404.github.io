@@ -17,6 +17,7 @@ Markdown / YAML → Jekyll + Liquid → HTML / CSS / JS → GitHub Pages。Ruby 
 | 通用页面覆盖 | `_layouts/page.html` | 保留主题 page 结构，增加索引空态 |
 | 导航 | `_includes/sidebar.html`, `atlas-navigation.html` | 共用导航与主题切换入口 |
 | 资源注入 | `_includes/metadata-hook.html` | 在主题允许的扩展点载入资源 |
+| 缓存兼容覆盖 | `assets/js/dist/sw.min.js` | 输出 `/sw.min.js`，沿用 Chirpy 7.1.1 Worker，只对导入配置增加构建版本 |
 | 视觉 | `assets/css/atlas.css` | 设计变量、首页、主题内页覆盖、响应式 |
 | 行为 | `assets/js/atlas-theme.js`, `atlas.js` | 首屏主题、方向切换、搜索/筛选 |
 | 插图 | `_includes/atlas-sculpture.svg` | 本地概念曲面，无网络和 WebGL 依赖 |
@@ -35,7 +36,7 @@ Markdown / YAML → Jekyll + Liquid → HTML / CSS / JS → GitHub Pages。Ruby 
 
 ## 主题升级注意点
 
-升级时重点比较 `_includes/sidebar.html`、`_includes/metadata-hook.html`、`_layouts/page.html` 与新版主题契约，回归移动导航、搜索、TOC、代码复制、PWA。`atlas.css` 中末段依赖 Chirpy CSS 变量/ID，应同步验证。不要直接修改容器中的 gem 文件。
+升级时重点比较 `_includes/sidebar.html`、`_includes/metadata-hook.html`、`_layouts/page.html` 和 `assets/js/dist/sw.min.js` 与新版主题契约，回归移动导航、搜索、TOC、代码复制、PWA。Atlas 资源版本与 Worker 导入配置版本均来自 `site.time`。`atlas.css` 中末段依赖 Chirpy CSS 变量/ID，应同步验证。不要直接修改容器中的 gem 文件。
 
 ## 来源与边界
 

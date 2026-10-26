@@ -24,7 +24,8 @@ package-lock.json
 
 # Misc
 _sass/dist
-assets/js/dist
+assets/js/dist/*
+!assets/js/dist/sw.min.js
 
 # Local-only settings, secrets and temporary files
 .local/

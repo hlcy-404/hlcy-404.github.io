@@ -31,3 +31,9 @@
 日期：2026-10-26。状态：采用。
 
 使用 `_tabs/friends.html` 与 `_data/friends.yml`，路径固定为 `/friends/`。借鉴参考页的介绍结构，沿用 Atlas 样式与 Chirpy 内页，不引入新主题或远程头像请求。用户只提供一位共创者，因此仅展示这一条真实记录。2026-10-26 用户追加提供完整介绍及照片，照片存入 `assets/img/friends/` 并按原比例展示；无照片时回退到字母标识。新增人物时维护 YAML，先核对公开信息与链接。
+
+## ADR-007 · 发布资源版本与友链肖像边界
+
+2026-10-26 线上验收发现新友链 HTML 搭配旧缓存的 Atlas CSS，造成肖像铺满正文。GitHub Pages 的更新配置响应使用 `max-age=600`；主题 Worker 默认导入固定路径配置，使新版本提示也可能延迟。修复采用：Atlas CSS/JS URL 加构建时间版本；在 `assets/js/dist/sw.min.js` 覆盖主题 Worker，保持 Chirpy 7.1.1 的缓存/更新行为，只为其配置导入增加同一构建版本。保留原主题的“更新”确认，不强制关闭 PWA。主题升级时需同步比较这个覆盖文件。机制参考 [MDN updateViaCache](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/updateViaCache)。
+
+肖像容器与图片设置局部最大宽度，避免样式未就绪时撑满正文。友链按用户新参考调整为左侧照片与身份、右侧完整介绍；手机为紧凑的照片/姓名抬头加正文。
