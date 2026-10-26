@@ -17,7 +17,7 @@ Markdown / YAML → Jekyll + Liquid → HTML / CSS / JS → GitHub Pages。Ruby 
 | 通用页面覆盖 | `_layouts/page.html` | 保留主题 page 结构，增加索引空态 |
 | 导航 | `_includes/sidebar.html`, `atlas-navigation.html` | 共用导航与主题切换入口 |
 | 资源注入 | `_includes/metadata-hook.html` | 在主题允许的扩展点载入资源 |
-| 缓存兼容覆盖 | `assets/js/dist/sw.min.js` | 输出 `/sw.min.js`，沿用 Chirpy 7.1.1 Worker，只对导入配置增加构建版本 |
+| 缓存兼容覆盖 | `assets/js/dist/sw.min.js` | 输出 `/sw.min.js`，沿用 Chirpy 7.1.1 更新流程，版本化导入配置并从网络刷新安装预缓存 |
 | 视觉 | `assets/css/atlas.css` | 设计变量、首页、主题内页覆盖、响应式 |
 | 行为 | `assets/js/atlas-theme.js`, `atlas.js` | 首屏主题、方向切换、搜索/筛选 |
 | 插图 | `_includes/atlas-sculpture.svg` | 本地概念曲面，无网络和 WebGL 依赖 |
