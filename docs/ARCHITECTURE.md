@@ -11,7 +11,8 @@ Markdown / YAML → Jekyll + Liquid → HTML / CSS / JS → GitHub Pages。Ruby 
 | 站点配置 | `_config.yml` | 身份、语言、URL、主题、内容默认值 |
 | 首页内容 | `_data/atlas.yml` | 导语、方向面板、设计文案 |
 | 文章内容 | `_posts/` | 正式文章及 front matter |
-| 固定页面 | `_tabs/` | 关于、分类、标签、归档 |
+| 固定页面 | `_tabs/` | 关于、友链、分类、标签、归档 |
+| 友链资料 | `_data/friends.yml` → `_tabs/friends.html` | 已确认的共创者资料、主页与合作文章链接 |
 | 首页布局 | `_layouts/atlas.html` | 读取真实内容，输出首页与搜索数据 |
 | 通用页面覆盖 | `_layouts/page.html` | 保留主题 page 结构，增加索引空态 |
 | 导航 | `_includes/sidebar.html`, `atlas-navigation.html` | 共用导航与主题切换入口 |

@@ -26,6 +26,7 @@
 | --- | --- |
 | 网站标题、副标题、语言、头像、社交资料 | `_config.yml` |
 | 关于我 | `_tabs/about.md` |
+| 朋友与共创者 | `_data/friends.yml`（资料）、`_tabs/friends.html`（页面） |
 | 新文章 | `_posts/YYYY-MM-DD-英文短名称.md` |
 | 图片与附件 | `assets/`，建议文章图片放 `assets/img/` |
 | 首页文案与方向面板 | `_data/atlas.yml` |

@@ -6,6 +6,7 @@
   <a href="{{ '/categories/' | relative_url }}" {% if page.url == '/categories/' %}aria-current="page"{% endif %}>{% include atlas-icon.html name='grid' %}<span>主题分类</span></a>
   <a href="{{ '/tags/' | relative_url }}" {% if page.url == '/tags/' %}aria-current="page"{% endif %}>{% include atlas-icon.html name='tag' %}<span>标签索引</span></a>
   <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>{% include atlas-icon.html name='user' %}<span>关于我</span></a>
+  <a href="{{ '/friends/' | relative_url }}" {% if page.url == '/friends/' %}aria-current="page"{% endif %}>{% include atlas-icon.html name='link' %}<span>友链<small>朋友与共创者</small></span></a>
 </nav>
 <div class="atlas-sidebar-note"><span class="atlas-eyebrow">A WORK IN PROGRESS</span>{% include atlas-icon.html name='leaf' %}<p>让每一次探索，<br>留下可以回看的痕迹。</p><a href="{{ '/feed.xml' | relative_url }}">通过 RSS 订阅 {% include atlas-icon.html name='arrow' %}</a></div>
 <div class="atlas-sidebar-bottom"><a href="https://github.com/{{ site.github.username }}" aria-label="GitHub 主页" target="_blank" rel="noopener noreferrer">{% include atlas-icon.html name='github' %}</a><a href="{{ '/feed.xml' | relative_url }}" aria-label="RSS 订阅">{% include atlas-icon.html name='rss' %}</a><button type="button" data-theme-toggle aria-label="切换到夜间模式" aria-pressed="false">{% include atlas-icon.html name='sun' %}</button><span class="atlas-sidebar-edition">FIELD NOTES / 01</span></div>

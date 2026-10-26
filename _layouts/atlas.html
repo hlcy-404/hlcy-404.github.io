@@ -18,14 +18,13 @@
       <div class="atlas-breadcrumb">个人探索手册 <span>/</span> <span>首页</span></div>
       <div class="atlas-top-actions"><a class="atlas-search-trigger" href="#writing" data-search-focus aria-label="搜索文章">{% include atlas-icon.html name='search' %}<span>搜索文章</span><kbd>/</kbd></a><button type="button" class="atlas-mobile-theme" data-theme-toggle aria-label="切换到夜间模式" aria-pressed="false">{% include atlas-icon.html name='sun' %}</button><a class="atlas-profile-link" href="{{ '/about/' | relative_url }}" aria-label="关于 hlcy"><img src="{{ site.avatar | relative_url }}" width="32" height="32" alt=""></a></div>
     </header>
-    <nav class="atlas-mobile-nav" aria-label="移动端导航"><a href="{{ '/' | relative_url }}" aria-current="page">首页</a><a href="{{ '/archives/' | relative_url }}">文章</a><a href="{{ '/categories/' | relative_url }}">分类</a><a href="{{ '/tags/' | relative_url }}">标签</a><a href="{{ '/about/' | relative_url }}">关于</a></nav>
+    <nav class="atlas-mobile-nav" aria-label="移动端导航"><a href="{{ '/' | relative_url }}" aria-current="page">首页</a><a href="{{ '/archives/' | relative_url }}">文章</a><a href="{{ '/categories/' | relative_url }}">分类</a><a href="{{ '/tags/' | relative_url }}">标签</a><a href="{{ '/about/' | relative_url }}">关于</a><a href="{{ '/friends/' | relative_url }}">友链</a></nav>
     <main id="main-content" class="atlas-content" tabindex="-1">
       <div class="atlas-intro-grid">
         <section class="atlas-hero" aria-labelledby="atlas-title">
           <div class="atlas-hero-top"><span class="atlas-eyebrow">{{ site.data.atlas.eyebrow }}</span><span class="atlas-volume">VOL. 01 <span>↗</span></span></div>
           <h1 id="atlas-title">{{ site.data.atlas.headline }}<br><em>{{ site.data.atlas.headline_accent }}</em></h1>
           <p class="atlas-intro">{{ site.data.atlas.intro }}</p>
-          <a href="#writing" class="atlas-primary">阅读记录 {% include atlas-icon.html name='arrow' %}</a>
           <figure class="atlas-specimen">{% include atlas-sculpture.svg %}<figcaption><span class="atlas-figure-index">FIG. 01</span> 思考的形状 <span class="atlas-figure-en">THE SHAPE OF AN IDEA</span></figcaption></figure>
           <div class="atlas-hero-foot"><span class="atlas-dot"></span>{{ site.data.atlas.signature }}<span class="atlas-scroll-note">向下探索 ↓</span></div>
         </section>
@@ -41,7 +40,7 @@
       {% assign other_posts = visible_posts | where_exp: 'post', 'post.pin != true' %}
       {% assign public_posts = pinned_posts | concat: other_posts %}
       <section id="writing" class="atlas-writing" aria-labelledby="writing-title">
-        <div class="atlas-section-heading"><div><span class="atlas-eyebrow">THE NOTEBOOK</span><h2 id="writing-title">沿途的记录<span>{{ public_posts.size | prepend: ' / ' }}</span></h2></div><a href="{{ '/archives/' | relative_url }}">查看归档 {% include atlas-icon.html name='arrow' %}</a></div>
+        <div class="atlas-section-heading"><div><span class="atlas-eyebrow">THE NOTEBOOK</span><h2 id="writing-title">沿途的记录<span>{{ public_posts.size | prepend: ' / ' }}</span></h2></div></div>
         <div class="atlas-writing-tools"><div class="atlas-filters" role="group" aria-label="按分类筛选"><button type="button" aria-pressed="true" data-category="">全部</button>{% for category in site.categories %}<button type="button" aria-pressed="false" data-category="{{ category[0] | escape }}">{{ category[0] | escape }}</button>{% endfor %}</div><label class="atlas-search">{% include atlas-icon.html name='search' %}<span class="atlas-sr-only">搜索文章标题、摘要或标签</span><input id="atlas-search" type="search" placeholder="搜索标题、摘要、标签…" autocomplete="off"></label></div>
         <p class="atlas-result-count atlas-sr-only" role="status" aria-live="polite"></p>
         <div class="atlas-posts">

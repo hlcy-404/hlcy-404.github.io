@@ -1,0 +1,36 @@
+---
+layout: page
+title: 朋友与共创者
+description: 在研究与创作中交换想法、共同推进问题的朋友，以及他们的个人主页。
+permalink: /friends/
+icon: fas fa-link
+order: 5
+---
+
+<div class="atlas-friends">
+  <p class="atlas-friends-kicker">PEOPLE &amp; CONNECTIONS</p>
+  <p class="atlas-friends-intro">一些同行的朋友，一些共同探索的故事。<br>这里连接他们的个人主页，也记录我们交汇的研究与创作。</p>
+  <div class="atlas-friends-list">
+    {% for friend in site.data.friends %}
+    <section class="atlas-friend" aria-labelledby="friend-{{ forloop.index }}">
+      <div class="atlas-friend-portrait">
+        {% if friend.photo %}<img src="{{ friend.photo | relative_url }}" width="{{ friend.photo_width }}" height="{{ friend.photo_height }}" alt="{{ friend.name | escape }}的肖像" loading="lazy">
+        {% else %}<div class="atlas-friend-mark" aria-hidden="true"><span>{{ friend.monogram | escape }}</span><small>{{ forloop.index | prepend: '0' }}</small></div>{% endif %}
+      </div>
+      <div class="atlas-friend-body">
+        <p class="atlas-friend-relation">{{ friend.relationship | escape }}</p>
+        <h2 id="friend-{{ forloop.index }}">{{ friend.name | escape }}</h2>
+        <p class="atlas-friend-english">{{ friend.english_name | escape }}</p>
+        <p class="atlas-friend-description">{{ friend.description | escape }}</p>
+        {% if friend.biography %}<div class="atlas-friend-bio">{{ friend.biography | markdownify }}</div>{% endif %}
+        <ul class="atlas-friend-interests" aria-label="{{ friend.name | escape }}关注的方向">{% for interest in friend.interests %}<li>{{ interest | escape }}</li>{% endfor %}</ul>
+        <div class="atlas-friend-links">
+          <a href="{{ friend.homepage | escape }}" aria-label="访问{{ friend.name | escape }}的个人主页">访问个人主页 {% include atlas-icon.html name='external' %}</a>
+          {% if friend.collaboration %}<a href="{{ friend.collaboration.url | relative_url }}">{{ friend.collaboration.title | escape }} {% include atlas-icon.html name='arrow' %}</a>{% endif %}
+        </div>
+      </div>
+    </section>
+    {% endfor %}
+  </div>
+  <p class="atlas-friends-note">更多介绍与近况，欢迎到朋友们的主页了解。</p>
+</div>
