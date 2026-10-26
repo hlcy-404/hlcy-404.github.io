@@ -2,6 +2,17 @@
 
 本项目是 `hlcy-404/hlcy-404.github.io` 的本地工作副本，使用 Jekyll + Chirpy。先读 `docs/LOCAL-DEVELOPMENT.md`，了解结构、预览、发布和验证方式。
 
+## AI 协作入口
+
+- 开始任务：读 `docs/STATUS.md` → 对应需求 `docs/PRD.md` → 对应任务 `docs/TASKS.md`。
+- 改代码前：读 `docs/ARCHITECTURE.md`；改视觉前：读 `docs/DESIGN-SYSTEM.md`；改文章前：读 `docs/CONTENT-GUIDE.md`。
+- 每次只解决一个明确目标，先说明范围和验收条件。事实、建议和未验证项分别标注。
+- 完成后更新 `docs/STATUS.md` 中的验证结果与下一步；完成的任务在 `docs/TASKS.md` 勾选。不要把“已实现”直接写成“已发布”。
+- 需求变更先更新 PRD；影响主题、链接、依赖或内容模型的选择记录到 `docs/DECISIONS.md`。
+- 首页文案在 `_data/atlas.yml`；首页模板在 `_layouts/atlas.html`；样式与交互分别在 `assets/css/atlas.css`、`assets/js/atlas*.js`。不要往生产内容里填测试文章。
+
+## 工程与发布边界
+
 - 个人资料、科研经历和文章内容以用户提供的信息为准；缺少的信息留空，不编造。
 - 修改网站配置看 `_config.yml`，文章放 `_posts/`，关于页在 `_tabs/about.md`，图片放 `assets/`。
 - 默认保留现有主题和文章链接规则。改视觉方案、主题版本或内容结构前先说明影响。

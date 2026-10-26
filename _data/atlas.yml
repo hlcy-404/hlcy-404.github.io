@@ -1,0 +1,34 @@
+# Interests are based on the owner's stated work, not completed achievements.
+eyebrow: A PERSONAL FIELD GUIDE
+headline: 让想法，
+headline_accent: 在实践中生长。
+intro: 从一个问题出发，在研究中寻找线索，在构建中检验想法。这里记录人工智能、计算技术与科研工程中的探索。
+signature: 保持好奇，持续求证。
+topics:
+  - id: research
+    number: '01'
+    label: 研究
+    english: Research
+    title: 从问题出发
+    subtitle: 观察 · 阅读 · 求证
+    description: 关注人工智能与计算技术中的问题、方法和证据，把阅读中的线索整理成可继续探索的方向。
+    keywords: [人工智能, 计算技术, 大模型]
+    note: 好的问题，是探索的起点。
+  - id: build
+    number: '02'
+    label: 构建
+    english: Build
+    title: 让想法落地
+    subtitle: 设计 · 实现 · 复现
+    description: 关注大模型、Agent 与科研工程，记录从原型到可运行系统的过程，以及实现中的判断与取舍。
+    keywords: [Agent, 科研工程, 可复现]
+    note: 在真实的约束中，检验一个想法。
+  - id: notes
+    number: '03'
+    label: 记录
+    english: Notes
+    title: 为思考留痕
+    subtitle: 整理 · 连接 · 回看
+    description: 为尚在形成的思考留一个位置，记录阅读、实践与日常观察，让零散的线索慢慢建立联系。
+    keywords: [阅读笔记, 方法整理, 随笔]
+    note: 记录，是与未来的自己对话。

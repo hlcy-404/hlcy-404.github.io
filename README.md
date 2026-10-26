@@ -1,54 +1,53 @@
-# hlcy-404 个人博客
+# hlcy-404 · 个人探索手册
 
-本仓库使用 Jekyll + Chirpy，发布地址为 https://hlcy-404.github.io/ 。
+关于人工智能、计算技术、大模型、Agent 与科研工程的个人博客。基于 Jekyll + Chirpy 7.1.1，使用 GitHub Pages 发布；首页采用暖纸色与鼠尾草绿的 Field Notes 设计。
 
-- 本地开发与同步说明：[docs/LOCAL-DEVELOPMENT.md](docs/LOCAL-DEVELOPMENT.md)
-- Windows 手动提交并同步：双击 `sync.cmd`，核对清单后输入 `y`。
-- 本地预览：启动 Docker Desktop 后双击 `preview.cmd`，等待构建完成，访问 http://127.0.0.1:4000 。
-- 停止预览：双击 `stop-preview.cmd`。
+## 快速开始
 
-以下保留原始模板说明。
+1. 启动 Docker Desktop，双击 `preview.cmd`。
+2. 等待构建完成，打开 <http://127.0.0.1:4000>。
+3. 修改并刷新；改 `_config.yml` 后重启预览。
+4. 停止预览：`stop-preview.cmd`。
+5. 只有决定发布时才运行 `sync.cmd`，核对变更清单后确认。保存文件不会上传。
 
-# Chirpy Starter
+## 从哪里读起
 
-[![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)][gem]&nbsp;
-[![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)][mit]
+| 文档 | 用途 |
+| --- | --- |
+| [当前状态](docs/STATUS.md) | 已做什么、验证到哪一步、下一步 |
+| [产品需求](docs/PRD.md) | 目标、范围、用户路径与验收条件 |
+| [架构](docs/ARCHITECTURE.md) | 技术结构、修改位置、主题覆盖边界 |
+| [设计规范](docs/DESIGN-SYSTEM.md) | 参考转译、颜色、字体、响应式、交互 |
+| [任务与优化路线](docs/TASKS.md) | 已完成任务与按价值排序的后续功能 |
+| [内容指南](docs/CONTENT-GUIDE.md) | 写文章、引用、草稿和发布检查 |
+| [本地开发](docs/LOCAL-DEVELOPMENT.md) | Docker、构建、手动同步、部署确认 |
+| [决策记录](docs/DECISIONS.md) | 方案对比及采用理由 |
+| [AI 协作约定](AGENTS.md) | 让 AI 接手任务前先读 |
 
-When installing the [**Chirpy**][chirpy] theme through [RubyGems.org][gem], Jekyll can only read files in the folders
-`_data`, `_layouts`, `_includes`, `_sass` and `assets`, as well as a small part of options of the `_config.yml` file
-from the theme's gem. If you have ever installed this theme gem, you can use the command
-`bundle info --path jekyll-theme-chirpy` to locate these files.
+## 常用修改
 
-The Jekyll team claims that this is to leave the ball in the user’s court, but this also results in users not being
-able to enjoy the out-of-the-box experience when using feature-rich themes.
+- 站点身份：`_config.yml`；首页文案：`_data/atlas.yml`；关于页：`_tabs/about.md`。
+- 正式文章：`_posts/YYYY-MM-DD-slug.md`；模板：[POST.md](docs/templates/POST.md)。
+- 首页布局：`_layouts/atlas.html`；样式：`assets/css/atlas.css`；交互：`assets/js/atlas.js`。
+- 每次新需求可复制 [TASK.md](docs/templates/TASK.md)，写清目标、范围和验收条件。
 
-To fully use all the features of **Chirpy**, you need to copy the other critical files from the theme's gem to your
-Jekyll site. The following is a list of targets:
+## 验证
 
-```shell
-.
-├── _config.yml
-├── _plugins
-├── _tabs
-└── index.html
+```powershell
+# 生产模式构建与站内链接检查；先停止预览，避免同时写 _site
+# 验证后可再次运行 preview.cmd
+docker compose stop blog
+docker compose run --rm blog bash -lc "bundle install && bash tools/test.sh"
+
+# 独立测试副本：生成样例内容，检查置顶、转义、链接、阅读结构等
+# 测试源和产物只存入 .local/atlas-qa，不污染正式文章
+docker compose run --rm blog bash -lc "bundle install && bundle exec ruby tools/verify-atlas.rb"
 ```
 
-To save you time, and also in case you lose some files while copying, we extract those files/configurations of the
-latest version of the **Chirpy** theme and the [CD][CD] workflow to here, so that you can start writing in minutes.
+当前正式文章数量与验收结论以 [STATUS.md](docs/STATUS.md) 为准。构建成功、浏览器验收、Git 推送、Actions 部署是不同层次，不互相替代。
 
-## Usage
+## 项目与许可
 
-Check out the [theme's docs](https://github.com/cotes2020/jekyll-theme-chirpy/wiki).
-
-## Contributing
-
-This repository is automatically updated with new releases from the theme repository. If you encounter any issues or want to contribute to its improvement, please visit the [theme repository][chirpy] to provide feedback.
-
-## License
-
-This work is published under [MIT][mit] License.
-
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[chirpy]: https://github.com/cotes2020/jekyll-theme-chirpy/
-[CD]: https://en.wikipedia.org/wiki/Continuous_deployment
-[mit]: https://github.com/cotes2020/chirpy-starter/blob/master/LICENSE
+- [仓库](https://github.com/hlcy-404/hlcy-404.github.io) · [网站](https://hlcy-404.github.io/)
+- 使用 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) 和 [Jekyll](https://jekyllrb.com/)；保留原始 [MIT LICENSE](LICENSE)。
+- 私密材料、凭据、依赖、缓存和构建产物不得提交。未提供的个人经历和成果不做填充。

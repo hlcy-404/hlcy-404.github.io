@@ -2,7 +2,26 @@
 # the default layout is 'page'
 icon: fas fa-info-circle
 order: 4
+title: 关于我
 ---
 
-> Add Markdown syntax content to file `_tabs/about.md`{: .filepath } and it will show up on this page.
-{: .prompt-tip }
+你好，我是 **hlcy-404**。
+
+我主要从事人工智能、计算技术、大模型、Agent 与科研工程相关工作。这个博客用来记录研究中的问题、工程中的实践，以及值得回看的思考。
+
+## 关注方向
+
+- **人工智能与计算技术**：关注问题、方法与证据之间的联系。
+- **大模型与 Agent**：关注模型能力与实际系统的结合。
+- **科研工程**：关注可复现、可维护的研究与工程过程。
+
+## 关于这里
+
+记录不只包含结论，也包含问题、边界和取舍。文章中的事实、实验结果与个人判断会尽量区分，尚未验证的内容会注明。
+
+## 找到我
+
+- [GitHub · hlcy-404](https://github.com/hlcy-404)
+- [通过 RSS 订阅文章]({{ '/feed.xml' | relative_url }})
+
+<!-- 姓名、单位、学历、论文、项目成果与联系方式待用户提供；不以模板或推测补全。 -->

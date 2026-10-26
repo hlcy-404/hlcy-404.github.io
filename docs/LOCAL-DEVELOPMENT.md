@@ -28,7 +28,12 @@
 | 关于我 | `_tabs/about.md` |
 | 新文章 | `_posts/YYYY-MM-DD-英文短名称.md` |
 | 图片与附件 | `assets/`，建议文章图片放 `assets/img/` |
-| 侧边栏联系方式 | `_data/contact.yml` |
+| 首页文案与方向面板 | `_data/atlas.yml` |
+| 首页布局 | `_layouts/atlas.html` |
+| 共用导航与联系方式入口 | `_includes/atlas-navigation.html` |
+| 首页和内页样式 | `assets/css/atlas.css` |
+| 交互与昼夜模式 | `assets/js/atlas.js`、`atlas-theme.js` |
+| 原主题联系方式配置 | `_data/contact.yml`（自定义导航不读取此列表） |
 | 分享按钮 | `_data/share.yml` |
 | 构建与发布流程 | `.github/workflows/pages-deploy.yml` |
 | Windows 同步逻辑 | `tools/Sync-Blog.ps1` |
@@ -69,8 +74,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\Sync-Blog.ps1 -Messa
 docker compose up
 docker compose down
 
+# 先停止预览，避免两个进程同时写入 _site
+docker compose stop blog
+
 # 在相同环境中构建并检查站内链接
 docker compose run --rm blog bash -lc "bundle install && bash tools/test.sh"
+
+# 隔离样例回归，不往正式 _posts 写测试文章
+docker compose run --rm blog bash -lc "bundle install && bundle exec ruby tools/verify-atlas.rb"
+
+# 检查后重新启动本地预览
+docker compose up -d
 ```
 
 已明确授权的自动化调用可以使用 `-Yes -Message "说明"`；该参数仅省略确认，不跳过分支、远端、冲突或文件检查。推送失败时，本地提交保留，处理网络或权限问题后重新运行即可。
@@ -87,9 +101,15 @@ docker compose run --rm blog bash -lc "bundle install && bash tools/test.sh"
 
 ## 当前内容基线与后续完善
 
-2026-10-26 核查：文章目录尚无正式文章；`title`、`tagline`、`description`、作者资料和部分社交链接保留模板值，关于页也为模板说明。
+2026-10-26 本地改造：文章目录仍无正式文章；站点已使用中文、hlcy-404 身份和用户明确提供的工作方向，移除了虚构模板邮箱/社交资料。关于页和首页已替换模板展示，缺失履历继续留空。具体完成和验收状态见 [STATUS.md](STATUS.md)。
 
-后续优先明确网站名称、中文/英文策略、公开个人简介、研究方向与项目展示，再整理导航和发布首篇文章。缺失的个人信息留空，由用户提供后再更新。
+首页使用 Atlas 自定义布局，内页保留 Chirpy 的阅读结构并覆盖导航和样式。后续从 [PRD.md](PRD.md)、[ARCHITECTURE.md](ARCHITECTURE.md)、[TASKS.md](TASKS.md) 开始；优先发布真实文章和可核查项目案例。
+
+## 隔离测试与浏览器验收
+
+`tools/verify-atlas.rb` 会在 `.local/atlas-qa/run-*/` 建立独立源副本，加入临时测试文章，生产模式构建并检查链接。检查置顶、隐藏/未发布、特殊字符、正文结构、RSS 和开发文件排除；最新结果路径写入 `.local/atlas-qa/latest.json`。测试资料不属于正式博客内容，不要同步此目录。
+
+浏览器验收至少覆盖：首页空态与有内容态、文章跳转、搜索/筛选/清除、方向键切换、主题切换及刷新持久化、375px 手机与桌面、长文代码和目录。自动化检查不替代这些可见交互。
 
 ## 参考
 

@@ -1,0 +1,25 @@
+---
+layout: default
+---
+{% include lang.html %}
+<article class="px-1">
+  {% if page.layout == 'page' or page.collection == 'tabs' %}
+    {% assign tab_key = page.title | downcase %}
+    {% assign title = site.data.locales[lang].tabs[tab_key] | default: page.title %}
+    <h1 class="dynamic-title">{{ title }}</h1>
+    <div class="content">
+      {% if page.url == '/archives/' or page.url == '/categories/' or page.url == '/tags/' %}
+        {% if site.posts.size == 0 %}
+          <div class="atlas-index-empty"><p>这里还没有公开的文章。</p><p>文章发布后，会在这里按时间、分类与标签整理。</p><a href="{{ '/' | relative_url }}">返回首页 →</a></div>
+        {% elsif page.url == '/categories/' and site.categories.size == 0 %}
+          <p>文章还没有设置分类。可以先从<a href="{{ '/archives/' | relative_url }}">全部文章</a>开始阅读。</p>
+        {% elsif page.url == '/tags/' and site.tags.size == 0 %}
+          <p>文章还没有设置标签。可以先从<a href="{{ '/archives/' | relative_url }}">全部文章</a>开始阅读。</p>
+        {% endif %}
+      {% endif %}
+      {{ content }}
+    </div>
+  {% else %}
+    {{ content }}
+  {% endif %}
+</article>

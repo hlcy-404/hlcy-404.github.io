@@ -1,0 +1,19 @@
+<svg class="atlas-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{% case include.name %}
+{% when 'home' %}<path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/>
+{% when 'book' %}<path d="M12 5v15M12 5C8 2 3 4 3 4v15s5-2 9 1c4-3 9-1 9-1V4s-5-2-9 1Z"/>
+{% when 'grid' %}<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+{% when 'tag' %}<path d="M3 3h8l10 10-8 8L3 11Z"/><circle cx="7.5" cy="7.5" r="1"/>
+{% when 'archive' %}<path d="M4 8h16v13H4zM3 3h18v5H3zM9 12h6"/>
+{% when 'user' %}<circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>
+{% when 'search' %}<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>
+{% when 'arrow' %}<path d="M4 12h16m-6-6 6 6-6 6"/>
+{% when 'external' %}<path d="M7 17 18 6M7 6h11v11"/>
+{% when 'sun' %}<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>
+{% when 'rss' %}<circle cx="5" cy="19" r="1"/><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/>
+{% when 'github' %}<path d="M9 20c-4 1-4-2-6-2m12 4v-4c0-1-.3-1.8-1-2 3-.4 6-1.5 6-6a5 5 0 0 0-1.4-3.5A5 5 0 0 0 18.5 3S17 2.6 14 4a13 13 0 0 0-4 0C7 2.6 5.5 3 5.5 3a5 5 0 0 0-.1 3.5A5 5 0 0 0 4 10c0 4.5 3 5.6 6 6-.7.3-1 1-1 2v4"/>
+{% when 'layers' %}<path d="m12 3 10 6-10 6L2 9Zm-9 11 9 5 9-5M3 19l9 5 9-5" transform="translate(0 -1)"/>
+{% when 'leaf' %}<path d="M20 3C10 2 3 6 4 13s12 9 15-1c1-3 1-6 1-9ZM4 21 15 9"/>
+{% else %}<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>
+{% endcase %}
+</svg>
