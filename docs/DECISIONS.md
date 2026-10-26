@@ -37,3 +37,5 @@
 2026-10-26 线上验收发现新友链 HTML 搭配旧缓存的 Atlas CSS，造成肖像铺满正文。GitHub Pages 的更新配置响应使用 `max-age=600`；主题 Worker 默认导入固定路径配置，使新版本提示也可能延迟。修复采用：Atlas CSS/JS URL 加构建时间版本；在 `assets/js/dist/sw.min.js` 覆盖主题 Worker，保持 Chirpy 7.1.1 的缓存/更新行为，只为其配置导入增加同一构建版本。保留原主题的“更新”确认，不强制关闭 PWA。主题升级时需同步比较这个覆盖文件。机制参考 [MDN updateViaCache](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/updateViaCache)。
 
 肖像容器与图片设置局部最大宽度，避免样式未就绪时撑满正文。友链按用户新参考调整为左侧照片与身份、右侧完整介绍；手机为紧凑的照片/姓名抬头加正文。
+
+连续发布复核又发现安装新 Worker 时的 `cache.addAll` 可能从 HTTP 缓存取到上一版 HTML。因此安装预缓存使用 `Request(..., { cache: 'reload' })`，确保新版本缓存从网络刷新页面；其余离线命中、激活清理和手动更新行为保持原主题语义。
