@@ -14,9 +14,9 @@
   <aside class="atlas-sidebar" aria-label="站点导航">{% include atlas-navigation.html %}</aside>
   <div class="atlas-workspace">
     <header class="atlas-topbar">
-      <a class="atlas-mobile-brand" href="{{ '/' | relative_url }}">hlcy-404<span> / FIELD NOTES</span></a>
+      <a class="atlas-mobile-brand" href="{{ '/' | relative_url }}">hlcy<span> / FIELD NOTES</span></a>
       <div class="atlas-breadcrumb">个人探索手册 <span>/</span> <span>首页</span></div>
-      <div class="atlas-top-actions"><a class="atlas-search-trigger" href="#writing" data-search-focus aria-label="搜索文章">{% include atlas-icon.html name='search' %}<span>搜索文章</span><kbd>/</kbd></a><button type="button" class="atlas-mobile-theme" data-theme-toggle aria-label="切换到夜间模式" aria-pressed="false">{% include atlas-icon.html name='sun' %}</button><a class="atlas-profile-link" href="{{ '/about/' | relative_url }}" aria-label="关于 hlcy-404"><img src="{{ site.avatar | relative_url }}" width="32" height="32" alt=""></a></div>
+      <div class="atlas-top-actions"><a class="atlas-search-trigger" href="#writing" data-search-focus aria-label="搜索文章">{% include atlas-icon.html name='search' %}<span>搜索文章</span><kbd>/</kbd></a><button type="button" class="atlas-mobile-theme" data-theme-toggle aria-label="切换到夜间模式" aria-pressed="false">{% include atlas-icon.html name='sun' %}</button><a class="atlas-profile-link" href="{{ '/about/' | relative_url }}" aria-label="关于 hlcy"><img src="{{ site.avatar | relative_url }}" width="32" height="32" alt=""></a></div>
     </header>
     <nav class="atlas-mobile-nav" aria-label="移动端导航"><a href="{{ '/' | relative_url }}" aria-current="page">首页</a><a href="{{ '/archives/' | relative_url }}">文章</a><a href="{{ '/categories/' | relative_url }}">分类</a><a href="{{ '/tags/' | relative_url }}">标签</a><a href="{{ '/about/' | relative_url }}">关于</a></nav>
     <main id="main-content" class="atlas-content" tabindex="-1">
@@ -33,7 +33,7 @@
           <div class="atlas-card-head"><span class="atlas-eyebrow">EXPLORATION INDEX</span>{% include atlas-icon.html name='layers' %}</div><h2>正在关注的事</h2><p class="atlas-card-caption">在不同视角之间，发现连接。</p>
           <div class="atlas-topic-tabs" role="tablist" aria-label="探索方向">{% for topic in site.data.atlas.topics %}<button type="button" role="tab" id="tab-{{ topic.id }}" aria-controls="panel-{{ topic.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}">{{ topic.label }}</button>{% endfor %}</div>
           {% for topic in site.data.atlas.topics %}<div id="panel-{{ topic.id }}" class="atlas-topic-panel" role="tabpanel" aria-labelledby="tab-{{ topic.id }}" tabindex="0" {% unless forloop.first %}hidden{% endunless %}><div class="atlas-topic-number">{{ topic.number }}<span>/ {{ topic.english }}</span></div><h3>{{ topic.title }}</h3><p class="atlas-topic-subtitle">{{ topic.subtitle }}</p><p class="atlas-topic-description">{{ topic.description }}</p><div class="atlas-chips">{% for keyword in topic.keywords %}<span>{{ keyword }}</span>{% endfor %}</div><p class="atlas-topic-note">{{ topic.note }}</p></div>{% endfor %}
-          <a class="atlas-author" href="{{ '/about/' | relative_url }}"><img src="{{ site.avatar | relative_url }}" alt="" width="44" height="44"><span>你好，我是 hlcy-404<small>更多关于我</small></span>{% include atlas-icon.html name='external' %}</a>
+          <a class="atlas-author" href="{{ '/about/' | relative_url }}"><img src="{{ site.avatar | relative_url }}" alt="" width="44" height="44"><span>你好，我是 hlcy<small>更多关于我</small></span>{% include atlas-icon.html name='external' %}</a>
         </aside>
       </div>
       {% assign visible_posts = site.posts | where_exp: 'post', 'post.hidden != true' %}
