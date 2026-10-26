@@ -2,7 +2,9 @@
 
 source "https://rubygems.org"
 
-gem "jekyll-theme-chirpy", "~> 7.1", ">= 7.1.1"
+# Keep the theme aligned with this starter's 7.1.1 configuration.
+# Upgrade the theme and its supporting files together in a separate change.
+gem "jekyll-theme-chirpy", "7.1.1"
 
 gem "html-proofer", "~> 5.0", group: :test
 

@@ -81,6 +81,8 @@ docker compose run --rm blog bash -lc "bundle install && bash tools/test.sh"
 
 项目使用 Docker Compose 将 Ruby 依赖存放在独立的 `hlcy-blog_gems` 卷中，预览端口只绑定 `127.0.0.1:4000`。未设置开机启动或后台自动上传。首次运行需要网络访问镜像仓库和 RubyGems；Docker 引擎不可用时需要先恢复 Docker Desktop。
 
+主题固定为与现有 Starter 配置对应的 `7.1.1`，避免普通内容发布时隐式升级主题。后续升级应同步检查主题配置、布局、静态资源和浏览器缓存。网站启用了 PWA；发布后若出现“New content available”，点击 Update 刷新缓存。
+
 `.gitignore` 排除依赖、构建产物、缓存、常见凭据文件和 `.local/`。`_config.yml` 排除开发说明、同步脚本、Compose 配置等，避免把辅助文件作为网站资源发布。原有 `assets/lib` 子模块保持仓库固定版本。
 
 ## 当前内容基线与后续完善
