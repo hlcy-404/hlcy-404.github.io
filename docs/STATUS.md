@@ -1,6 +1,6 @@
 # 项目状态
 
-## 2026-10-27 本地写作 1.3（本地已验证，待同步）
+## 2026-10-27 本地写作 1.3（本地已验证，源码已同步）
 
 - 部署跟踪迁到本地服务，关闭编辑页不影响查询；任务结果、检查时间、失败详情和重试计划写入本机，服务重启后恢复。停止本地服务会暂停跟踪，重新启动后继续；没有新增开机任务或自动 Git 推送。
 - 按精确提交、工作流及最新运行尝试识别上传、构建、部署、公开版本核验；上线要求文章版本标记与资源哈希通过。上传失败保留同一提交供手动重试，查询网络故障保留已知阶段并退避，遵守 GitHub 限流时间。
@@ -9,6 +9,7 @@
 - 浏览器完成关页后构建失败、重新打开读取结果、网络错误后自动恢复至上线成功，以及上传失败专用操作；375×667 完成中文保存、下载/键盘选择完整备份、独立恢复、清理核对/取消、坏包拒绝及旧确认失效。375×812 与桌面 1280×720 卡片回归均无横向溢出。未发布测试文章。
 - 原用户草稿“生活散记”SHA-256 保持 F702F81BDC1DB54DAC1C7718BB47CAAB4CF318BB1B70110D0AE256A85B941BD0。
 - 证据位于忽略目录 .local/studio-qa/：tests-v13-final.log、publishing-cards-desktop.png、publishing-375-failed.png、publishing-375-live.png、maintenance-cards-375-restore.png、maintenance-cards-375.png、maintenance-cards-desktop.png。定宽浏览器验收不等同于手机真机验收。
+- 源码、测试与文档已通过 [0ac5baf](https://github.com/hlcy-404/hlcy-404.github.io/commit/0ac5bafb5e2f5492e395fdf9026187bd719a9a7c) 同步 main；[Actions 40467640813](https://github.com/hlcy-404/hlcy-404.github.io/actions/runs/40467640813) 的 build、deploy 均成功。公开首页 HTTP 200，/tools/studio/ HTTP 404。本机服务已重启为 1.3，隔离验收服务已关闭。
 - 首篇真实文章从编辑器发布仍需单独选择和授权；此次同步仅含源码、测试与文档，不含测试草稿、备份或预览产物。
 
 ## 2026-10-27 备份与空间窄屏补验（本地已验证，源码已同步）
