@@ -99,9 +99,25 @@ test('部署跟踪必须匹配提交与公开版本，不能用 HTTP 200 代替�
   const f=await fixture();const sha='a'.repeat(40);const revision=id();
   const job={sha,prepared:{revision,articleUrl:'https://example.test/posts/test/',files:[]}};
   let html='<html>旧版文章</html>',conclusion='success';
-  const fetcher=async url=>url.includes('api.github')?{ok:true,json:async()=>({workflow_runs:[{id:1,head_sha:'b'.repeat(40),status:'completed',conclusion:'success'},{id:2,head_sha:sha,status:'completed',conclusion,html_url:'https://example.test/actions/2'}]})}:{ok:true,text:async()=>html};
+  const fetcher=async url=>url.includes('/attempts/')?{ok:true,json:async()=>({jobs:[{name:'build',conclusion:'failure'}]})}:url.includes('api.github')?{ok:true,json:async()=>({workflow_runs:[{id:1,head_sha:'b'.repeat(40),status:'completed',conclusion:'success'},{id:2,head_sha:sha,status:'completed',conclusion,html_url:'https://example.test/actions/2'}]})}:{ok:true,text:async()=>html};
   const p=new Publisher({...f,origin:f.remote,build:fakeBuild,fetcher});
   assert.equal((await p.track(job)).stage,'verifying');
   html=`<meta name="studio-revision" content="${revision}">`;assert.equal((await p.track(job)).stage,'live');
-  conclusion='failure';assert.equal((await p.track(job)).stage,'deploy_failed');
+  conclusion='failure';assert.equal((await p.track(job)).stage,'build_failed');
+});
+
+test('上传成功后本机记录失败不会误报上传失败',async()=>{
+  const f=await fixture(),d=await article(f.store),p=new Publisher({...f,origin:f.remote,build:fakeBuild});
+  const prepared=await p.prepare(d,id()),states=[];
+  f.store.markPublished=async()=>{throw new Error('模拟本地记录暂不可写');};
+  const sha=await p.commit(prepared,async changes=>states.push(changes));
+  assert.equal((await git(f.remote,['rev-parse','main'])).trim(),sha);
+  assert.ok(states.some(s=>s.stage==='uploaded'));assert.match(states.at(-1).localRecordError,/本地记录/);
+});
+
+test('推送成功后检查点写入失败仍携带上传成功凭据',async()=>{
+  const f=await fixture(),d=await article(f.store),p=new Publisher({...f,origin:f.remote,build:fakeBuild});
+  const prepared=await p.prepare(d,id());let sha;
+  await assert.rejects(()=>p.commit(prepared,async changes=>{if(changes.sha)sha=changes.sha;if(changes.stage==='uploaded')throw new Error('模拟检查点暂不可写');}),error=>error.uploadSucceeded===true);
+  assert.equal((await git(f.remote,['rev-parse','main'])).trim(),sha);
 });

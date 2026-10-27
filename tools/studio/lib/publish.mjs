@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { git, fail, exists, atomic, jsonRead, jsonWrite, digest, id, within } from './core.mjs';
 import { postPath, articlePath, renderPost } from './store.mjs';
+import {probeDeployment} from './deployment.mjs';
 
 export const repository = 'hlcy-404/hlcy-404.github.io';
 export const expectedOrigin = `https://github.com/${repository}.git`;
@@ -24,8 +25,8 @@ export async function gitGate(root, origin = expectedOrigin, expectedHead) {
   return head;
 }
 export class Publisher {
-  constructor({ root, data, store, build, origin = expectedOrigin, remoteRepository = repository, site = 'https://hlcy-404.github.io', fetcher = fetch }) {
-    Object.assign(this, { root, data, store, build, origin, remoteRepository, site, fetcher });
+  constructor({ root, data, store, build, origin = expectedOrigin, remoteRepository = repository, site = 'https://hlcy-404.github.io', fetcher = fetch, apiBase = 'https://api.github.com' }) {
+    Object.assign(this, { root, data, store, build, origin, remoteRepository, site, fetcher, apiBase });
   }
   async prepare(draft, job, onLog) {
     const head = await gitGate(this.root, this.origin);
@@ -69,8 +70,11 @@ export class Publisher {
     }
     await checkpoint({ stage: 'committed', sha });
     await this.push(sha);
-    await checkpoint({ stage: 'uploaded', sha });
-    await this.store.markPublished(prepared.draft, sha);
+    try {
+      await checkpoint({ stage: 'uploaded', sha });
+      try { await this.store.markPublished(prepared.draft, sha); }
+      catch(error) { await checkpoint({localRecordError:error.message}); }
+    } catch(error) { error.uploadSucceeded=true; throw error; }
     return sha;
   }
   async push(sha) {
@@ -79,23 +83,5 @@ export class Publisher {
     // Push the recorded commit, not a possibly newer local branch. Never force push.
     await git(this.root, ['push','origin',`${sha}:refs/heads/main`]);
   }
-  async track(job) {
-    if (!/^[a-f0-9]{40}$/.test(job.sha || '')) fail('该记录尚未上传。');
-    const response = await this.fetcher(`https://api.github.com/repos/${this.remoteRepository}/actions/workflows/pages-deploy.yml/runs?branch=main&head_sha=${job.sha}&per_page=10`, { headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'hlcy-local-studio', 'Cache-Control': 'no-cache' }, signal: AbortSignal.timeout(20000) });
-    if (!response.ok) fail(`暂时无法读取部署状态（HTTP ${response.status}）。文章提交已保留，可稍后重试。`);
-    const runs = (await response.json()).workflow_runs || [];
-    const run = runs.filter(r => r.head_sha === job.sha).sort((a,b) => (b.run_attempt || 0) - (a.run_attempt || 0) || b.id - a.id)[0];
-    if (!run) return { stage: 'uploaded', message: '已上传，等待 GitHub 创建部署任务。' };
-    const details = { runUrl: run.html_url, runId: run.id };
-    if (run.status !== 'completed') return { ...details, stage: 'deploying', message: 'GitHub 正在构建或部署。' };
-    if (run.conclusion !== 'success') return { ...details, stage: 'deploy_failed', message: `部署未成功：${run.conclusion}。可打开 Actions 查看原因。` };
-    const page = await this.fetcher(`${job.prepared.articleUrl}?studio_verify=${job.prepared.revision}`, { headers: { 'Cache-Control': 'no-cache' }, signal: AbortSignal.timeout(20000) });
-    const html = await page.text();
-    if (!page.ok || !html.includes(`content="${job.prepared.revision}"`)) return { ...details, stage: 'verifying', message: '部署成功，正在等待公开文章切换到本次内容。' };
-    for (const file of job.prepared.files.filter(f => f.path.startsWith('assets/'))) {
-      const image = await this.fetcher(`${this.site}/${file.path}?studio_verify=${job.sha}`, { signal: AbortSignal.timeout(20000) });
-      if (!image.ok || digest(Buffer.from(await image.arrayBuffer())) !== file.sha256) return { ...details, stage: 'verifying', message: '文章已更新，正在等待配图同步。' };
-    }
-    return { ...details, stage: 'live', message: '本次部署成功，公开文章版本和配图已核对。旧浏览器如提示更新，请点击更新。' };
-  }
+  async track(job,options={}) {return probeDeployment(job,{fetcher:this.fetcher,repository:this.remoteRepository,site:this.site,apiBase:this.apiBase,...options});}
 }

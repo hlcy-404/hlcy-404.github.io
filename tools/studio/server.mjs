@@ -7,6 +7,7 @@ import { buildSite, sourceHash } from './lib/build.mjs';
 import { importBackup } from './lib/import-backup.mjs';
 import { contentHash } from './lib/revisions.mjs';
 import { Publisher } from './lib/publish.mjs';
+import {DeploymentTracker,trackingStages} from './lib/tracker.mjs';
 import { id, safeId, within, exists, jsonRead, jsonWrite, run, fail, digest } from './lib/core.mjs';
 import {WorkspaceBackups,StorageManager} from './lib/maintenance.mjs';
 import {exportArticle,importArticle} from './lib/portable.mjs';
@@ -20,7 +21,11 @@ const origin = `http://127.0.0.1:${editorPort}`;
 const previewOrigin = `http://127.0.0.1:${previewPort}`;
 const token = id() + id();
 const store = new Store(root, data);
-const publisher = new Publisher({ root, data, store, build: buildSite });
+// Test transports are limited to ignored local fixtures and a loopback HTTP server.
+const fixtureOrigin=process.env.STUDIO_TEST_DEPLOYMENT_ORIGIN;
+const fixtureRoot=path.resolve(here,'../../.local')+path.sep;
+if(fixtureOrigin&&(!root.startsWith(fixtureRoot)||!/^http:\/\/127\.0\.0\.1:\d+$/.test(fixtureOrigin)))throw new Error('Invalid isolated deployment fixture');
+const publisher = new Publisher({ root, data, store, build: buildSite, ...(fixtureOrigin?{apiBase:fixtureOrigin,site:fixtureOrigin}:{}) });
 await fs.mkdir(path.join(data, 'jobs'), { recursive: true });
 const jobs = new Map();
 let active = null;
@@ -30,7 +35,7 @@ const storage=new StorageManager(data,jobs,()=>active);
 const restoredWorkspace=await exists(path.join(data,'restored-records','RESTORED.json'));
 async function exclusive(name,action) {
   if(active||maintenance||mutations>1)fail('另一个保存、构建或维护操作尚未结束，请稍后重试。',409);
-  maintenance=name;try{return await action();}finally{maintenance=null;}
+  maintenance=name;try{await tracker.idle();return await action();}finally{maintenance=null;tracker.arm();}
 }
 async function zipBody(req) {
   if(req.headers['content-type']!=='application/zip')fail('请选择 ZIP 备份包。',415);
@@ -40,10 +45,17 @@ function zipResponse(res,bytes,name) {res.writeHead(200,{'Content-Type':'applica
 for (const entry of await fs.readdir(path.join(data, 'jobs'))) {
   if (!entry.endsWith('.json')) continue;
   const job = await jsonRead(path.join(data, 'jobs', entry));
+  if(!job.title&&job.draftId){try{job.title=(await store.get(job.draftId)).meta.title;}catch{/* A removed legacy draft must not block startup. */}}
   if (['building','preparing','publishing','materialized'].includes(job.stage)) { job.stage = 'interrupted'; job.message = '上次操作因服务关闭而中断；草稿和恢复副本已保留。请检查 Git 状态后重新操作。'; }
   jobs.set(job.id, job);
 }
-async function persist(job, changes = {}) { Object.assign(job, changes, { updatedAt: new Date().toISOString() }); await jsonWrite(path.join(data, 'jobs', `${job.id}.json`), job); return job; }
+async function persist(job, changes = {}) { const next={...job,...changes,updatedAt:new Date().toISOString()};await jsonWrite(path.join(data,'jobs',`${job.id}.json`),next);Object.assign(job,next);return job; }
+async function publishFailure(job,error){
+  if(error.uploadSucceeded||job.stage==='uploaded')return persist(job,{stage:'uploaded',message:'已上传，本机记录待核对。',localRecordError:error.message});
+  return persist(job,{stage:job.sha?'push_failed':'publish_failed',message:job.sha?'上传失败，可重试。':'发布未完成，请重新检查。',failureDetail:error.message});
+}
+const tracker=new DeploymentTracker({jobs,persist,probe:(job,options)=>publisher.track(job,options),blocked:()=>!!(active||maintenance),disabled:restoredWorkspace, ...(fixtureOrigin?{interval:150,tickDelay:50}:{}),onError:error=>console.error('Deployment tracking:',error.message)});
+function summary(job){return {id:job.id,kind:job.kind,draftId:job.draftId,title:job.title||job.prepared?.draft?.meta?.title||'文章',stage:job.stage,createdAt:job.createdAt,updatedAt:job.updatedAt,message:job.message,sha:job.sha,runUrl:job.runUrl,tracking:job.tracking,trackingError:job.trackingError};}
 function json(res, value, status = 200) { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control':'no-store' }); res.end(JSON.stringify(value)); }
 async function body(req,maxBytes=15*1024*1024) {
   if (!req.headers['content-type']?.startsWith('application/json')) fail('请使用 JSON 请求。', 415);
@@ -54,7 +66,8 @@ async function body(req,maxBytes=15*1024*1024) {
 function getJob(key) { const job = jobs.get(safeId(key)); if (!job) fail('操作记录不存在。',404); return job; }
 async function launch(kind, key, action) {
   if (active) fail('正在检查或发布另一篇文章，请等待当前操作完成。', 409);
-  const job = { id:id(), kind, draftId:key, stage:kind === 'preview' ? 'building':'preparing', logs:'', createdAt:new Date().toISOString() };
+  const draft=await store.get(key);
+  const job = { id:id(), kind, draftId:key,title:draft.meta.title, stage:kind === 'preview' ? 'building':'preparing', logs:'', createdAt:new Date().toISOString() };
   active = job.id; jobs.set(job.id,job); await persist(job);
   const log = chunk => { job.logs = (job.logs + chunk).slice(-24000); };
   void action(job,log).catch(async error => { await persist(job,{ stage:'failed', message:error.message }); }).finally(() => { active = null; });
@@ -127,7 +140,12 @@ const server = http.createServer(async (req,res) => {
           }); return json(res,job,202);
         }
       }
-      if (route === '/api/jobs' && req.method === 'GET') return json(res,[...jobs.values()].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,30));
+      if (route === '/api/jobs' && req.method === 'GET') {
+        const all=[...jobs.values()].filter(j=>!url.searchParams.has('kind')||j.kind===url.searchParams.get('kind')).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+        const visible=new Map(all.slice(0,50).map(j=>[j.id,j]));
+        for(const j of all)if(trackingStages.has(j.stage)||j.tracking?.retryPending)visible.set(j.id,j);
+        return json(res,[...visible.values()].map(summary));
+      }
       const jobRoute = route.match(/^\/api\/jobs\/([a-f0-9-]+)(?:\/(confirm|retry|track|preview-status))?$/);
       if (jobRoute) {
         const [,key,action] = jobRoute; const job = getJob(key);
@@ -139,9 +157,7 @@ const server = http.createServer(async (req,res) => {
         }
         if (action === 'track' && req.method === 'POST') {
           await body(req);
-          try { await persist(job,{...await publisher.track(job),trackingError:null}); }
-          catch (error) { await persist(job,{trackingError:error.message}); }
-          return json(res,job);
+          return json(res,await tracker.check(job,{manual:true}));
         }
         if (action === 'confirm' && req.method === 'POST') {
           if(restoredWorkspace)fail('恢复副本不能沿用发布确认，请将文章导入正式项目。');
@@ -149,7 +165,7 @@ const server = http.createServer(async (req,res) => {
           if (active || job.stage !== 'ready') fail('当前检查不能重复发布，请先完成或重新检查。',409);
           if (input.revision !== job.prepared.revision) fail('发布确认已失效，请重新检查。',409);
           active = job.id; await persist(job,{stage:'publishing'});
-          void publisher.commit(job.prepared, changes => persist(job,changes)).then(()=>persist(job,{message:'已上传，正在等待部署。'})).catch(error=>persist(job,{stage:job.sha ? 'push_failed':'publish_failed',message:error.message})).finally(()=>{active=null;});
+          void publisher.commit(job.prepared, changes => persist(job,changes)).then(async()=>{await persist(job,{message:'已上传，等待构建。',failureDetail:null});await tracker.enroll(job);}).catch(error=>publishFailure(job,error)).finally(()=>{active=null;tracker.arm();});
           return json(res,job,202);
         }
         if (action === 'retry' && req.method === 'POST') {
@@ -157,13 +173,14 @@ const server = http.createServer(async (req,res) => {
           await body(req);
           if (active || !['push_failed','committed'].includes(job.stage) || !job.sha) fail('该记录不需要重试上传。');
           active = job.id; await persist(job,{stage:'committed'});
-          void publisher.push(job.sha).then(async()=>{await store.markPublished(job.prepared.draft,job.sha);await persist(job,{stage:'uploaded',message:'上传成功，等待部署。'});}).catch(error=>persist(job,{stage:'push_failed',message:error.message})).finally(()=>{active=null;});
+          let uploadSucceeded=false;
+          void publisher.push(job.sha).then(async()=>{uploadSucceeded=true;await persist(job,{stage:'uploaded',message:'上传成功，等待构建。',failureDetail:null});try{await store.markPublished(job.prepared.draft,job.sha);}catch(error){await persist(job,{localRecordError:error.message});}await tracker.enroll(job);}).catch(error=>publishFailure(job,Object.assign(error,{uploadSucceeded}))).finally(()=>{active=null;tracker.arm();});
           return json(res,job,202);
         }
       }
       if (route === '/api/shutdown' && req.method === 'POST') {
         await body(req); if (active) fail('当前仍在构建或发布，请完成后再关闭。',409);
-        json(res,{ok:true}); setTimeout(()=>{server.close();previewServer.close();process.exit(0);},100); return;
+        await tracker.stop();json(res,{ok:true}); setTimeout(()=>{server.close();previewServer.close();process.exit(0);},100); return;
       }
       fail('接口不存在。',404);
     }
@@ -206,4 +223,5 @@ const previewServer = http.createServer(async (req,res)=>{
 });
 await new Promise((resolve,reject)=>{previewServer.once('error',reject);previewServer.listen(previewPort,'127.0.0.1',resolve);});
 await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(editorPort,'127.0.0.1',resolve);});
+tracker.start();
 console.log(`Local studio: ${origin}`);
