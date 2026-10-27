@@ -2,3 +2,34 @@
 .banner{padding:14px 18px;margin-bottom:20px;background:var(--wash);border:1px solid var(--line);border-radius:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.banner.warning{background:#fff0df;border-color:#c48d48}.banner[hidden]{display:none}.wide-dialog{width:min(1100px,95vw);max-height:90vh;overflow:auto}.history-grid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:24px}.history-grid aside{max-height:52vh;overflow:auto}.line-diff{max-height:52vh}.line-diff span,.line-diff ins,.line-diff del{display:block;white-space:pre-wrap;text-decoration:none}.line-diff ins{background:#e1edd9;color:#243e24}.line-diff del{background:#f8e0d9;color:#7c2921}.conflict-item,.recovery-item{border-top:1px solid var(--line);padding:18px 0}.conflict-item button,.recovery-item button{margin:5px 8px 5px 0}.conflict-item.resolved{border-left:3px solid var(--green);padding-left:14px}.conflict-item textarea,#merge-result{font:14px/1.8 Consolas,'Microsoft YaHei',monospace}.conflict-item h3{font-size:15px}.import-label{font-size:12px}.preview-dialog small{display:block}#pending-images>div{background:var(--wash);padding:10px;margin:8px 0}#pending-images button{margin-left:14px}@media(max-width:680px){.history-grid{grid-template-columns:1fr}.history-grid aside{max-height:180px}.wide-dialog{padding:18px}.preview-dialog .frame-wrap{height:calc(100% - 142px)}}
 .maintenance-status{padding:12px 16px;background:var(--wash);border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere}.maintenance-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}.maintenance-grid>section{min-width:0}.maintenance-row{display:flex;gap:14px;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding:14px 0}.maintenance-row small{display:block;color:var(--muted);font-size:12px}.maintenance-row a,.maintenance-row button{flex-shrink:0}.maintenance-row>div{min-width:0;overflow-wrap:anywhere}.space-section{border-top:1px solid var(--line);padding-top:18px;margin-top:28px}.space-categories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.space-card{padding:12px;background:var(--paper);border:1px solid var(--line);border-radius:7px}.space-card span,.space-card small{display:block;font-size:12px;color:var(--muted)}.space-card strong{display:block;font-size:17px;font-weight:500}.preview-choice{display:grid;grid-template-columns:20px minmax(0,1fr);gap:3px 9px;margin:0;min-width:0;font-size:13px}.preview-choice input{width:16px;margin:4px 0}.preview-choice small{grid-column:2}.cleanup-review{border:1px solid var(--line);padding:12px;margin-top:16px;background:var(--paper)}#archive-list{max-height:220px;overflow:auto;margin-top:16px}#preview-storage-list{max-height:340px;overflow:auto;margin-bottom:18px}@media(max-width:680px){.maintenance-grid{grid-template-columns:1fr}.space-categories{grid-template-columns:repeat(2,minmax(0,1fr))}.maintenance-row{align-items:flex-start}.maintenance-row button{padding:6px 8px}#maintenance-dialog h2{margin-bottom:8px}}
 #storage-refresh{font-size:14px}
+
+/* Keep maintenance actions reachable while only the content pane scrolls. */
+body:has(#maintenance-dialog[open]){overflow:hidden}
+#maintenance-dialog{padding:0;max-width:calc(100% - 32px);max-height:92vh;max-height:92dvh;overflow:hidden}
+#maintenance-dialog[open]{display:flex;flex-direction:column}
+#maintenance-dialog .maintenance-title{flex:none;flex-wrap:nowrap;align-items:center;gap:12px;padding:20px 28px 12px;border-bottom:1px solid var(--line)}
+#maintenance-dialog .maintenance-title h2{margin:4px 0 0}
+#maintenance-dialog .maintenance-title>div{min-width:0}
+#maintenance-dialog .maintenance-title>button{flex:none;width:44px;height:44px;padding:0}
+.maintenance-content{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 28px 28px;overflow-wrap:anywhere}
+#maintenance-dialog button,#maintenance-dialog .maintenance-row a{min-height:44px;min-width:44px;max-width:100%}
+#maintenance-dialog .maintenance-row a{display:inline-flex;align-items:center;padding:8px 4px}
+#maintenance-dialog .space-section>.dialog-title{flex-wrap:nowrap;align-items:center;gap:12px}
+#maintenance-dialog .space-section h3{min-width:0}
+#storage-refresh{flex:none}
+#maintenance-dialog .preview-choice{min-height:44px;align-content:start}
+#maintenance-dialog .preview-choice input{height:20px;width:20px}
+#maintenance-dialog .preview-choice span,#maintenance-dialog .preview-choice small{overflow-wrap:anywhere}
+#maintenance-dialog pre{scroll-margin-block:12px}
+@media(max-width:680px){
+  #maintenance-dialog{width:calc(100% - 16px);max-width:calc(100% - 16px);max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);margin:auto}
+  #maintenance-dialog .maintenance-title{padding:12px 16px}
+  .maintenance-content{padding:0 16px 20px}
+  #maintenance-dialog #archive-list,#maintenance-dialog #preview-storage-list,#maintenance-dialog pre{max-height:none;overflow:visible}
+  #maintenance-dialog .maintenance-grid{gap:20px}
+  #maintenance-dialog .maintenance-row{gap:10px}
+  #maintenance-dialog .space-categories{gap:10px}
+  #maintenance-dialog .space-card{min-width:0;padding:10px}
+  #maintenance-dialog .dialog-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  #maintenance-dialog .dialog-actions button{width:100%}
+}
