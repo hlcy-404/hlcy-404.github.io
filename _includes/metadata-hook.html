@@ -1,4 +1,5 @@
 {% assign atlas_version = site.time | date: '%s' %}
+{% if page.studio_revision %}<meta name="studio-revision" content="{{ page.studio_revision | escape }}">{% endif %}
 <link rel="stylesheet" href="{{ '/assets/css/atlas.css' | relative_url }}?v={{ atlas_version }}">
 <script src="{{ '/assets/js/atlas-theme.js' | relative_url }}?v={{ atlas_version }}"></script>
 <script src="{{ '/assets/js/atlas.js' | relative_url }}?v={{ atlas_version }}" defer></script>

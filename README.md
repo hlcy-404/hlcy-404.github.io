@@ -4,6 +4,8 @@
 
 ## 快速开始
 
+自主写文章：Windows 下双击 `studio.cmd` 打开本地写作界面。支持版本恢复、真实主题预览、文章包导入/导出、完整环境备份、存储管理及确认发布。源码与锁文件随仓库分发，服务只在运行者本机启动；草稿、备份、凭据和缓存不上传。使用步骤见 [本地写作使用指南](docs/LOCAL-STUDIO.md)。
+
 1. 启动 Docker Desktop，双击 `preview.cmd`。
 2. 等待构建完成，打开 <http://127.0.0.1:4000>。
 3. 修改并刷新；改 `_config.yml` 后重启预览。
@@ -20,6 +22,8 @@
 | [设计规范](docs/DESIGN-SYSTEM.md) | 参考转译、颜色、字体、响应式、交互 |
 | [任务与优化路线](docs/TASKS.md) | 已完成任务与按价值排序的后续功能 |
 | [内容指南](docs/CONTENT-GUIDE.md) | 写文章、引用、草稿和发布检查 |
+| [本地写作使用指南](docs/LOCAL-STUDIO.md) | 打开编辑器、保存草稿、预览、确认发布和问题恢复 |
+| [本地写作与发布方案](docs/LOCAL-AUTHORING-PLAN.md) | 方案比较与首版设计依据 |
 | [本地开发](docs/LOCAL-DEVELOPMENT.md) | Docker、构建、手动同步、部署确认 |
 | [决策记录](docs/DECISIONS.md) | 方案对比及采用理由 |
 | [AI 协作约定](AGENTS.md) | 让 AI 接手任务前先读 |

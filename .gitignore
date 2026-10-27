@@ -15,6 +15,9 @@ _site
 node_modules
 package-lock.json
 
+# Publish reproducible tool source; keep dependencies and user data local
+!tools/studio/package-lock.json
+
 # IDE configurations
 .idea
 .vscode/*

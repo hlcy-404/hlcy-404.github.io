@@ -2,7 +2,13 @@
 
 ## 当前结构
 
-Markdown / YAML → Jekyll + Liquid → HTML / CSS / JS → GitHub Pages。Ruby 3.3 运行于本项目 Compose 容器，Chirpy 固定 7.1.1；无新前端构建链、数据库或后端服务。
+分发边界：用户在 1.2 轮授权编辑器源码、测试、依赖锁文件及启动器进入公开仓库；解除先前源码排除规则。草稿、备份、依赖缓存和运行时仍只在本机。Jekyll 仍排除工具和文档目录，Pages 只部署静态产物；本机服务只监听回环地址。公开的 `studio-revision` 元数据仅供核验文章版本，不提供编辑权限。
+
+本地写作 1.2：`archive.mjs` 封装 fflate ZIP、限额、路径和哈希校验；`references.mjs` 通过 marked 识别 Markdown/HTML 资源及静态 Liquid 路径；`portable.mjs` 负责单篇独立文章包；`maintenance.mjs` 管理完整环境备份、独立目录恢复、占用统计、保留和两阶段清理。前端 `modules/maintenance.js` 独立管理维护界面。维护操作与正在保存/构建/发布的任务互斥；来源目录在复制前后核对，外部修改导致重试。恢复副本带只读发布标记，旧发布任务归档，不续用确认。
+
+本地写作 1.1：存储层统一处理版本检查、历史快照和恢复，`revisions.mjs` 封装 diff3；备份导入先完整验证再将暂存目录原子移入草稿目录。浏览器以项目/草稿/窗口隔离 IndexedDB 暂存，历史、恢复、冲突和预览分别由前端模块处理。构建目录与 URL 均带 job ID，预览只读取该目录；源目录摘要值忽略 `.git` 和 `.DS_Store`，与复制规则一致。仅预览副本载入路径修正插件，正式站点与发布前构建不应用该插件。
+
+Markdown / YAML → Jekyll + Liquid → HTML / CSS / JS → GitHub Pages。Ruby 3.3 运行于本项目 Compose 容器，Chirpy 固定 7.1.1；公开站点保持静态。作者本机增加 Node.js 写作服务，使用本地文件，不引入数据库。
 
 主题源码主要位于 Ruby gem。项目内同名布局/片段会覆盖主题文件；这是 Jekyll 的主题机制，不是缺失源码。
 
@@ -22,6 +28,8 @@ Markdown / YAML → Jekyll + Liquid → HTML / CSS / JS → GitHub Pages。Ruby 
 | 行为 | `assets/js/atlas-theme.js`, `atlas.js` | 首屏主题、方向切换、搜索/筛选 |
 | 插图 | `_includes/atlas-sculpture.svg` | 本地概念曲面，无网络和 WebGL 依赖 |
 | 验证与预览 | `compose.yaml`, `tools/`, `*.cmd` | 隔离环境、本地构建、手动同步 |
+| 本地写作 | `tools/studio/server.mjs`, `public/`, `lib/` | 草稿、图片、独立预览、精确发布和部署跟踪 |
+| 写作启动 | `studio.cmd`, `stop-studio.cmd`, `tools/Start-Studio.ps1` | 项目专用运行时、依赖校验、手动启动与关闭 |
 
 ## 内容与交互契约
 
