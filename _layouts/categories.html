@@ -1,0 +1,102 @@
+---
+layout: page
+---
+
+<div class="editorial-categories">
+  {% assign cat_stat = '' %}
+  {% if site.categories.size > 0 %}
+    {% capture cat_stat %}共 {{ site.categories.size }} 个专题卷宗 · {{ site.posts.size }} 篇手记{% endcapture %}
+  {% endif %}
+
+  {% include atlas-index-header.html
+    active='categories'
+    eyebrow='TOPICAL COLLECTIONS'
+    lead='按研究与实践脉络归类的专题卷宗，无需二次跳转即可直览卷内文章。'
+    stat=cat_stat
+  %}
+
+  {% if site.posts.size == 0 %}
+    <div class="atlas-index-empty">
+      <p>这里还没有公开的文章。</p>
+      <p>文章发布后，会在这里按时间、分类与标签整理。</p>
+      <a href="{{ '/' | relative_url }}">返回首页 →</a>
+    </div>
+  {% elsif site.categories.size == 0 %}
+    <div class="atlas-index-empty">
+      <p>现有文章暂未划分专题分类。可以先从 <a href="{{ '/archives/' | relative_url }}">全部文章</a> 开始阅读。</p>
+    </div>
+  {% else %}
+    {% assign sort_categories = site.categories | sort %}
+    <div class="dossier-list">
+      {% for category in sort_categories %}
+        {% assign category_name = category | first %}
+        {% assign posts_of_category = category | last %}
+        {% capture category_url %}/categories/{{ category_name | slugify | url_encode }}/{% endcapture %}
+
+        <section class="category-dossier" aria-labelledby="dossier-title-{{ forloop.index }}">
+          <header class="dossier-header">
+            <div class="dossier-title-group">
+              <span class="dossier-kicker">Collection {% if forloop.index < 10 %}0{{ forloop.index }}{% else %}{{ forloop.index }}{% endif %}</span>
+              <div class="dossier-heading-row">
+                <h2 id="dossier-title-{{ forloop.index }}">
+                  <a href="{{ category_url | relative_url }}">{{ category_name | escape }}</a>
+                </h2>
+                <span class="dossier-count-badge">{{ posts_of_category.size }} 篇记录</span>
+              </div>
+            </div>
+
+            <a class="dossier-standalone-link" href="{{ category_url | relative_url }}">
+              <span>独立专题页</span>
+              {% include atlas-icon.html name='arrow' %}
+            </a>
+          </header>
+
+          <div class="dossier-entries">
+            {% for post in posts_of_category limit: 8 %}
+              {% assign summary = post.description | default: post.excerpt | strip_html | normalize_whitespace | truncate: 140 %}
+              <article class="dossier-entry">
+                <div class="dossier-entry-main">
+                  <div class="archive-entry-meta">
+                    <time datetime="{{ post.date | date_to_xmlschema }}" class="archive-entry-date">{{ post.date | date: '%Y 年 %m 月 %d 日' }}</time>
+                    {% if post.pin %}<span class="archive-pin-pill">精选</span>{% endif %}
+                  </div>
+
+                  <h3 class="dossier-entry-title">
+                    <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                  </h3>
+
+                  {% if summary != '' %}
+                    <p class="dossier-entry-summary">{{ summary | escape }}</p>
+                  {% endif %}
+
+                  {% if post.tags.size > 0 %}
+                    <div class="archive-entry-tags dossier-tags">
+                      {% for tag in post.tags limit: 4 %}
+                        <a class="archive-tag-item" href="{{ tag | slugify | url_encode | prepend: '/tags/' | append: '/' | relative_url }}"># {{ tag | escape }}</a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+
+                <a class="archive-entry-cta dossier-cta" href="{{ post.url | relative_url }}" aria-label="阅读《{{ post.title | escape }}》">
+                  <span>阅读手记</span>
+                  {% include atlas-icon.html name='arrow' %}
+                </a>
+              </article>
+            {% endfor %}
+
+            {% if posts_of_category.size > 8 %}
+              <div class="dossier-more">
+                <a href="{{ category_url | relative_url }}">查看本专题全部 {{ posts_of_category.size }} 篇手记 →</a>
+              </div>
+            {% endif %}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+
+    <footer class="archive-colophon">
+      <p>每个专题卷宗按长期关注的问题域自然生长；如需跨专题按时间顺序浏览，可切换至 <a href="{{ '/archives/' | relative_url }}">全部文章</a>，或按技术词条检索 <a href="{{ '/tags/' | relative_url }}">标签索引</a>。</p>
+    </footer>
+  {% endif %}
+</div>

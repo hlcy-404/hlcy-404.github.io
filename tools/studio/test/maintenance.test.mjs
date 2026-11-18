@@ -63,6 +63,78 @@ test('完整环境往返保留正文、图片与历史，恢复副本不覆盖�
   const other=await manager.inspect(bytes);await fs.appendFile(path.join(data,'restore-inputs',`${other.id}.zip`),'corrupt');await assert.rejects(()=>manager.restore(other),/发生变化/);assert.equal(await exists(path.join(data,'restores',other.id)),false);
 });
 
+test('完整备份保留成稿、嵌套验证数据与必要配置，同时排除私人配置、凭据及递归缓存',async()=>{
+  const {root,data}=await setup();
+  const article='.local/article-deliverables/中文成稿';
+  const included={
+    '.gitmodules':'[submodule "assets/lib"]\npath = assets/lib\n',
+    '.editorconfig':'root = true\n','.nojekyll':'',
+    '.devcontainer/devcontainer.json':'{"name":"local fixture"}',
+    '.devcontainer/post-create.sh':'# fixture only\n',
+    '.vscode/settings.json':'{"editor.formatOnSave":true}',
+    '.vscode/tasks.json':'{"tasks":[]}',
+    '.vscode/extensions.json':'{"recommendations":[]}',
+    '_drafts/未发布.md':'仅在本机保存的 Jekyll 草稿。',
+    [`${article}/正文.md`]:'# 成稿\n\n中文与公式 $x^2$。',
+    [`${article}/文章.zip`]:Buffer.from(zipSync({'article.md':Buffer.from('portable article')})),
+    [`${article}/checks.log`]:'验证通过\n',
+    [`${article}/validation/project/.local/studio/drafts/sample/draft.json`]:'{"body":"隔离验证资料"}',
+    [`${article}/validation/project/.local/studio/history/sample/v1.json`]:'{"version":1}'
+  };
+  const omitted=[
+    '.local/unrelated/private.txt','.vscode/private-settings.json','.devcontainer/private.json',
+    `${article}/.env.local`,`${article}/private.key`,`${article}/id_ed25519`,
+    `${article}/node_modules/package/index.js`,`${article}/.git/config`,`${article}/_site/index.html`,
+    `${article}/validation/project/.local/runtime/node.exe`,
+    `${article}/validation/project/.local/studio/archives/old.zip`,
+    `${article}/validation/project/.local/studio/restores/old/project/article.md`,
+    '.local/studio/archives/retained.zip','.local/studio/restores/retained/project/article.md','docs/runtime.log'
+  ];
+  for(const [name,content] of Object.entries(included))await atomic(path.join(root,name),content);
+  for(const name of omitted)await atomic(path.join(root,name),'excluded fixture');
+  await jsonWrite(path.join(root,'tools/studio/package.json'),{version:'1.3.1'});
+  const manager=new WorkspaceBackups(root,data),report=await manager.create();
+  const bytes=await fs.readFile(path.join(data,'archives',`${report.id}.zip`)),pack=readArchive(bytes,WORKSPACE_FORMAT);
+  assert.equal(pack.manifest.scopeVersion,2);assert.equal(pack.manifest.studioVersion,'1.3.1');
+  assert.equal(report.studioVersion,'1.3.1');assert.equal(report.articleDeliverableFiles,5);
+  for(const [name,content] of Object.entries(included))assert.deepEqual(pack.entries.get(`project/${name}`),Buffer.from(content),name);
+  for(const name of omitted)assert.equal(pack.entries.has(`project/${name}`),false,name);
+  const restored=await manager.restore(await manager.inspect(bytes));
+  for(const [name,content] of Object.entries(included))assert.deepEqual(await fs.readFile(path.join(restored.path,name)),Buffer.from(content),name);
+  assert.equal(await fs.readFile(path.join(data,'archives/retained.zip'),'utf8'),'excluded fixture');
+  const rebackup=new WorkspaceBackups(restored.path,path.join(restored.path,'.local/studio'));
+  const again=await rebackup.create();assert.equal(again.articleDeliverableFiles,5);
+});
+
+test('恢复拒绝带有效哈希但超出新增白名单的文件；成稿中的链接也不能越界读取',async()=>{
+  const {root,data}=await setup(),manager=new WorkspaceBackups(root,data),report=await manager.create();
+  const {entries}=readArchive(await fs.readFile(path.join(data,'archives',`${report.id}.zip`)),WORKSPACE_FORMAT);
+  for(const name of ['.local/unrelated/private.txt','.vscode/private-settings.json',
+    '.local/article-deliverables/paper/.env.local','.local/article-deliverables/paper/.local/studio/archives/old.zip']) {
+    const injected=new Map(entries);injected.set(`project/${name}`,Buffer.from('not authorized'));
+    const pack=await createArchive(WORKSPACE_FORMAT,injected);
+    await assert.rejects(()=>manager.inspect(pack.bytes),/范围外/);
+  }
+  const outside=path.join(root,'not-selected');await fs.mkdir(outside);await atomic(path.join(outside,'private.txt'),'not selected');
+  const article=path.join(root,'.local/article-deliverables');await fs.mkdir(article,{recursive:true});
+  await fs.symlink(outside,path.join(article,'linked'),'junction');
+  await assert.rejects(()=>manager.create(),/链接/);
+});
+
+test('新版恢复器兼容没有范围修订与工具版本字段的旧 v1 完整备份',async()=>{
+  const {root,data,store}=await setup();let draft=await store.create({title:'旧版备份'});
+  draft=await store.save(draft.id,edit(draft,'旧版正文'));
+  const entries=new Map();
+  for(const name of ['_config.yml','tools/studio/server.mjs','tools/studio/package-lock.json',
+    `.local/studio/drafts/${draft.id}/draft.json`])entries.set(`project/${name}`,await fs.readFile(path.join(root,name)));
+  const legacy=await createArchive(WORKSPACE_FORMAT,entries,{scope:'source-and-saved-writing-data'});
+  assert.equal(legacy.manifest.scopeVersion,undefined);
+  const manager=new WorkspaceBackups(root,data),inspected=await manager.inspect(legacy.bytes),restored=await manager.restore(inspected);
+  assert.equal(inspected.drafts.length,1);
+  assert.deepEqual(await new Store(restored.path,path.join(restored.path,'.local/studio')).get(draft.id),draft);
+  assert.ok(await exists(path.join(restored.path,'.local/studio/restored-records/RESTORED.json')));
+});
+
 test('ZIP 路径越界、大小写重名、损坏清单拒绝，不能借符号链接读外部资源',async()=>{
   const malicious=Buffer.from(zipSync({'../outside.txt':Buffer.from('no')}));assert.throws(()=>readArchive(malicious,ARTICLE_FORMAT),/不安全/);
   assert.throws(()=>readArchive(Buffer.from(zipSync({'A.txt':Buffer.from('a'),'a.txt':Buffer.from('b')})),ARTICLE_FORMAT),/重复/);

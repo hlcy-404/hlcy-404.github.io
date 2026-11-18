@@ -5,22 +5,38 @@ import {id,digest,fail,jsonRead,jsonWrite,atomic,exists,safeId} from './core.mjs
 import {validateDraft} from './store.mjs';
 
 export const WORKSPACE_FORMAT='hlcy-studio-workspace-v1';
-export const SOURCE_ROOTS=['_config.yml','Gemfile','Gemfile.lock','index.html','404.html','_data','_includes','_layouts','_plugins','_posts','_tabs','_sass','assets','docs','tools','compose.yaml','README.md','AGENTS.md','LICENSE','.github','.gitignore','.gitattributes','studio.cmd','stop-studio.cmd','preview.cmd','stop-preview.cmd','sync.cmd'];
+export const WORKSPACE_SCOPE_VERSION=2;
+export const SOURCE_ROOTS=[
+  '_config.yml','Gemfile','Gemfile.lock','index.html','404.html',
+  '_data','_includes','_layouts','_plugins','_posts','_drafts','_tabs','_sass','assets','docs','tools',
+  'compose.yaml','README.md','AGENTS.md','LICENSE','.github','.gitignore','.gitattributes',
+  '.gitmodules','.editorconfig','.nojekyll',
+  '.devcontainer/devcontainer.json','.devcontainer/post-create.sh',
+  '.vscode/settings.json','.vscode/extensions.json','.vscode/tasks.json',
+  'studio.cmd','stop-studio.cmd','preview.cmd','stop-preview.cmd','sync.cmd'
+];
 const DATA_ROOTS=['drafts','history','backups','releases','jobs','restored-records'];
-const excluded=/(^|\/)(node_modules|vendor|\.git|\.bundle|\.jekyll-cache|_site|\.DS_Store|Thumbs\.db)(\/|$)|(^|\/)(\.env(?:\.|$)|id_rsa|id_ed25519)|\.(?:pem|key|p12|pfx|log|tmp)$/i;
+const ARTICLE_ROOT='.local/article-deliverables';
+const CAPTURE_ROOTS=[...SOURCE_ROOTS,...DATA_ROOTS.map(r=>`.local/studio/${r}`),ARTICLE_ROOT];
+const excluded=/(^|\/)(node_modules|vendor|\.git|\.bundle|\.jekyll-cache|_site|\.DS_Store|Thumbs\.db)(\/|$)|(^|\/)(\.env(?:\.|$)|id_rsa|id_ed25519)|\.(?:pem|key|p12|pfx|tmp)$/i;
+const generatedLocal=/(^|\/)\.local\/(?:runtime|studio\/(?:archives|restore-inputs|restores|builds|imports))(\/|$)/i;
 function allowedProject(name) {
-  if(excluded.test(name))return false;
+  if(excluded.test(name)||generatedLocal.test(name))return false;
+  // Deliverables may contain validation logs and nested saved-writing fixtures.
+  // Only this explicit subtree is allowed, never the whole .local directory.
+  if(name.startsWith(ARTICLE_ROOT+'/'))return true;
+  if(/\.log$/i.test(name))return false;
   if(name.startsWith('.local/studio/'))return DATA_ROOTS.some(r=>name.startsWith(`.local/studio/${r}/`));
   if(name.split('/').includes('.local'))return false;
   return SOURCE_ROOTS.some(r=>name===r||name.startsWith(r+'/'));
 }
 async function inventory(root,data) {
   const items=[];
-  for(const entry of [...SOURCE_ROOTS,...DATA_ROOTS.map(r=>`.local/studio/${r}`)]) {
+  for(const entry of CAPTURE_ROOTS) {
     const target=await safeFile(root,entry);if(!await exists(target))continue;
     const stat=await fs.lstat(target);
-    if(stat.isDirectory())for(const file of await walkFiles(target,n=>!excluded.test(`${entry}/${n}`)&&(entry.startsWith('.local/')||!n.split('/').includes('.local'))))items.push({path:`${entry}/${file.path}`,size:file.size});
-    else if(stat.isFile()&&!excluded.test(entry))items.push({path:entry,size:stat.size});
+    if(stat.isDirectory())for(const file of await walkFiles(target,n=>allowedProject(`${entry}/${n}`)))items.push({path:`${entry}/${file.path}`,size:file.size});
+    else if(stat.isFile()&&allowedProject(entry))items.push({path:entry,size:stat.size});
   }
   // The service's data folder is deliberately fixed; do not archive an arbitrary path.
   if(path.resolve(data)!==path.join(path.resolve(root),'.local','studio'))fail('备份数据目录不匹配。');
@@ -49,15 +65,21 @@ export class WorkspaceBackups {
     const second=await inventory(this.root,this.data);
     if(JSON.stringify(first)!==JSON.stringify(second))fail('备份期间文件发生变化，请重新备份。');
     for(const file of second)if(digest(await readBounded(this.root,file.path))!==digest(entries.get(`project/${file.path}`)))fail(`备份期间内容发生变化：${file.path}`);
-    const instructions='完整写作环境备份\n\nproject/ 包含网站和工具源码、锁文件、已保存草稿、配图、历史和发布记录。\n不包含 Git 历史和凭据、浏览器未保存输入、Node/Ruby 运行时、依赖缓存或可重新生成的预览。\n请将本 ZIP 复制到另一块磁盘；同盘副本不能防止硬盘损坏。\n\n在写作工具“备份与空间”中选择 ZIP，核对后恢复为独立工作副本。\n也可手动解压到空目录；先停止原编辑服务，再运行 project/studio.cmd。首次运行需联网准备固定版本依赖，并安装 Docker Desktop 后重新预览。\n恢复副本不自动连接 Git 或继续旧发布确认；核对后将文章迁回正式仓库。\n只运行你信任的备份中的代码。\n';
+    const instructions='完整写作环境备份\n\nproject/ 包含网站和工具源码、锁文件、项目配置、已保存草稿、配图、历史、发布记录及 .local/article-deliverables/ 文章成稿（含验证日志）。\n不包含 Git 历史和凭据、浏览器未保存输入、Node/Ruby 运行时、依赖缓存、可重新生成的预览或已有完整备份/独立恢复目录。\n完整文件范围见 manifest.json；本包需用写作工具 1.3.1 或更新版本校验恢复，新版仍兼容旧包。\n请将本 ZIP 复制到已确认的外部设备；同机副本不是离机备份。\n\n在写作工具“备份与空间”中选择 ZIP，核对后恢复为独立工作副本。\n也可将可信且已校验的包手动解压到空目录；保留恢复标记，先停止原编辑服务，再运行 project/studio.cmd。首次运行需联网准备固定版本依赖；真实预览需 Docker Desktop 并先安装 Ruby 依赖，详见 project/docs/BACKUP-RECOVERY.md。\n恢复副本不自动连接 Git 或继续旧发布确认；核对后将文章迁回正式仓库。\n只运行你信任的备份中的代码。\n';
     entries.set('RESTORE.txt',Buffer.from(instructions));
     // Also protect a manually extracted backup, not just copies restored in the UI.
     entries.set('project/.local/studio/restored-records/RESTORED.json',Buffer.from(JSON.stringify({restored:true,createdAt:new Date().toISOString()})));
-    const result=await createArchive(WORKSPACE_FORMAT,entries,{scope:'source-and-saved-writing-data',excluded:['Git history and credentials','browser temporary inputs','runtime and dependency caches','generated previews'],sourceFileCount:first.length});
+    const studioVersion=JSON.parse(entries.get('project/tools/studio/package.json')?.toString()||'{}').version||null;
+    const result=await createArchive(WORKSPACE_FORMAT,entries,{
+      scope:'source-saved-writing-and-article-deliverables',scopeVersion:WORKSPACE_SCOPE_VERSION,studioVersion,
+      includedRoots:CAPTURE_ROOTS,
+      excluded:['Git history and credentials','browser temporary inputs','runtime and dependency caches','generated previews','existing workspace archives and restored workspaces'],
+      sourceFileCount:first.length,articleDeliverableFiles:first.filter(f=>f.path.startsWith(ARTICLE_ROOT+'/')).length
+    });
     const drafts=validateWorkspace(readArchive(result.bytes,WORKSPACE_FORMAT));
     const key=id(),file=path.join(this.data,'archives',`${key}.zip`);
     await atomic(file,result.bytes);
-    const report={id:key,createdAt:result.manifest.createdAt,bytes:result.bytes.length,sourceBytes:total,files:result.manifest.files.length,drafts,sha256:digest(result.bytes),download:`/api/archives/${key}/download`};
+    const report={id:key,createdAt:result.manifest.createdAt,bytes:result.bytes.length,sourceBytes:total,files:result.manifest.files.length,drafts,scopeVersion:WORKSPACE_SCOPE_VERSION,studioVersion,articleDeliverableFiles:result.manifest.articleDeliverableFiles,sha256:digest(result.bytes),download:`/api/archives/${key}/download`};
     await jsonWrite(path.join(this.data,'archives',`${key}.json`),report);return report;
   }
   async list() {

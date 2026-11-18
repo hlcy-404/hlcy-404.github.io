@@ -1,36 +1,630 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>hlcy · 本地写作</title><link rel="stylesheet" href="/vendor/easymde.css"><link rel="stylesheet" href="/style.css"></head>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>hlcy · Studio 本地写作台</title>
+  <link rel="stylesheet" href="/vendor/easymde.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
 <body>
-<header class="top"><a class="brand" href="/">h<span>lcy.</span></a><div><strong>本地写作</strong></div><span id="environment" class="health">正在检查环境</span><nav class="top-actions" aria-label="工作台操作"><button id="publishing-open">发布记录 <span id="publishing-count" class="count" hidden></span></button><button id="maintenance-open">备份与空间</button><button id="new" class="primary">＋ 新建文章</button></nav></header>
-<div class="workspace">
-<aside class="library"><h2>文章与草稿</h2><label class="search-label">查找文章<input id="search" type="search" placeholder="搜索标题"></label><button class="import-label" id="import-choose" type="button">导入文章</button><input id="import-backup" type="file" accept="application/json,.json,application/zip,.zip" hidden><h3>本地草稿 <span id="draft-count"></span></h3><div id="draft-list"></div><h3>仓库文章</h3><div id="post-list"></div><details class="history"><summary>操作记录</summary><div id="job-list"></div></details></aside>
-<main><section id="recovery-banner" class="banner" hidden><span id="recovery-count"></span><button id="recovery-open">查看暂存</button></section><section id="storage-warning" class="banner warning" hidden><span id="storage-warning-text"></span><button id="export-input">导出当前正文</button><button id="copy-input">复制正文</button></section>
-<section id="welcome" class="welcome"><div class="welcome-heading"><div><div class="section-label">WORKSPACE</div><h1>写作工作台</h1></div><button id="welcome-new" class="primary">＋ 新建文章</button></div><div class="welcome-cards"><div class="desk-card"><span class="card-number">01</span><h2>写作</h2><p>从左侧选择文章，继续编辑。</p></div><div class="desk-card"><span class="card-number">02</span><h2>预览</h2><p>查看文章的实际博客样式。</p></div><div class="desk-card"><span class="card-number">03</span><h2>发布</h2><p>核对内容，查看上线进度。</p></div></div><button id="publish-overview" class="publication-card overview" hidden><span><small>最近发布</small><strong id="publish-overview-title"></strong></span><span id="publish-overview-status"></span><span aria-hidden="true">↗</span></button></section>
-<section id="article" hidden>
-<div class="article-bar"><div><span id="article-kind" class="section-label">LOCAL DRAFT</span><p id="save-state" role="status">已保存到本机</p></div><div class="article-actions"><div class="actions secondary-actions"><button id="resolve-conflict" hidden>处理冲突</button><button id="history-button">版本历史</button><button id="export">导出文章</button></div><div class="actions primary-actions"><button id="save">保存</button><button id="preview">真实主题预览</button><button id="prepare" class="primary">检查并发布</button></div></div></div>
-<label class="title-field">文章标题<input id="title" maxlength="200" placeholder="给这篇文章起一个标题"></label>
-<div class="info-grid"><label>英文短名称<input id="slug" placeholder="例如 agent-research-notes" maxlength="100"></label><label>发布日期 · 北京时间<input id="date" type="datetime-local" step="1"></label></div>
-<label>摘要<textarea id="description" rows="2" placeholder="写下本文的问题、方法或你希望读者获得的内容。"></textarea></label>
-<div class="info-grid"><label>分类<input id="categories" placeholder="研究记录（多个用逗号分隔）"></label><label>标签<input id="tags" placeholder="Agent，科研工程"></label></div>
-<div class="options"><label><input id="pin" type="checkbox">置顶</label><label><input id="toc" type="checkbox" checked>文章目录</label><label><input id="math" type="checkbox">公式</label><label><input id="mermaid" type="checkbox">Mermaid 图示</label></div>
-<div class="body-heading"><h2>正文</h2><div><label for="image-file" class="button">＋ 插入图片</label><input id="image-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden><button id="quick-toggle" aria-pressed="false">快速排版预览</button></div></div>
+  <header class="top">
+    <div class="top-left">
+      <button type="button" id="toggle-library" class="icon-btn" aria-label="收起或展开文库" title="切换左侧文库 (Ctrl+\)">
+        <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M7.5 3.5v13"/></svg>
+      </button>
+      <a class="brand" href="/" id="brand-home" title="返回工作台概览">
+        <span class="brand-mark">h.</span>
+        <span class="brand-name">hlcy</span>
+        <span class="brand-badge">Studio</span>
+      </a>
+      <div id="doc-status-pill" class="doc-status-pill" hidden>
+        <span id="article-kind" class="kind-chip">LOCAL DRAFT</span>
+        <span class="status-divider" aria-hidden="true">·</span>
+        <span id="save-state" class="save-indicator" role="status">已保存到本机</span>
+      </div>
+    </div>
 
-<div id="pending-images" role="status"></div><textarea id="body" aria-label="文章正文"></textarea><div id="quick-preview" class="quick-preview" hidden></div>
-</section>
-<div id="notice" role="alert" hidden></div>
-</main></div>
-<dialog id="new-dialog"><form id="new-form"><div class="section-label">NEW ENTRY</div><h2>新建一篇文章</h2><label>标题<input id="new-title" placeholder="也可以稍后填写" maxlength="200"></label><label>正文模板<select id="template"><option value="blank">空白文章</option><option value="research">研究记录</option><option value="engineering">工程实践</option><option value="reading">阅读笔记</option><option value="essay">随笔</option></select></label><div class="dialog-actions"><button type="button" data-close="new-dialog">取消</button><button class="primary">创建草稿</button></div></form></dialog>
-<dialog id="publishing-dialog" class="panel-dialog" aria-labelledby="publishing-title"><div class="panel-header"><h2 id="publishing-title">发布记录</h2><div class="actions"><button id="publishing-refresh">刷新</button><button data-close="publishing-dialog" class="close-button" aria-label="关闭发布记录">×</button></div></div><div class="panel-content"><p id="publishing-connection" class="maintenance-status" role="status" hidden></p><div id="publishing-list" class="publication-list"></div></div></dialog>
-<dialog id="job-dialog" class="job-dialog panel-dialog" aria-labelledby="job-title"><div class="panel-header"><div><div id="job-badge"></div><h2 id="job-title">发布进度</h2></div><button data-close="job-dialog" class="close-button" aria-label="关闭进度窗口">×</button></div><div class="panel-content"><p id="job-connection" class="maintenance-status" role="status" hidden></p><ol id="job-steps" class="steps"></ol><p id="job-message" role="status"></p><p id="job-warning" class="card-warning" role="status" hidden></p><div class="tracking-times"><span id="job-checked"></span><span id="job-next"></span></div><details id="job-detail" hidden><summary>查看失败详情</summary><pre id="job-error-detail"></pre></details><details id="files-section" hidden><summary>本次发布文件</summary><ul id="job-files"></ul></details><details id="diff-section" hidden><summary>本次正文变化</summary><div class="diff-grid"><section><h3>原内容</h3><pre id="before"></pre></section><section><h3>本次内容</h3><pre id="after"></pre></section></div></details><details><summary>检查日志</summary><pre id="job-log"></pre></details></div><div class="panel-footer"><a id="run-link" class="button" target="_blank" rel="noopener noreferrer" hidden>查看构建详情 ↗</a><a id="live-link" class="button primary" target="_blank" rel="noopener noreferrer" hidden>打开文章 ↗</a><button id="show-preview" hidden>打开预览</button><button id="track" hidden>重新检查</button><button id="retry" class="primary" hidden>重试上传</button><button id="confirm" class="primary" hidden>确认发布到 GitHub</button></div></dialog>
-<dialog id="preview-dialog" class="preview-dialog"><div class="dialog-title"><div><strong>真实主题预览</strong><small id="preview-version" role="status"></small></div><div class="actions"><button id="desktop-view" aria-pressed="true">桌面</button><button id="mobile-view" aria-pressed="false">手机</button><a id="preview-external" target="_blank" rel="noopener noreferrer">在新窗口打开 ↗</a><button data-close="preview-dialog" aria-label="关闭预览">×</button></div></div><div class="frame-wrap"><iframe id="preview-frame" title="博客真实主题预览"></iframe></div></dialog>
-<dialog id="history-dialog" class="wide-dialog"><div class="dialog-title"><h2>版本历史与恢复</h2><button data-close="history-dialog" aria-label="关闭版本历史">×</button></div><p id="history-description"></p><div class="history-grid"><aside><div id="history-list"></div><button id="history-more">加载更多版本</button></aside><section><div id="history-diff"></div><details><summary>查看所选版本完整正文</summary><pre id="history-original"></pre></details></section></div><div class="dialog-actions"><button data-close="history-dialog">取消</button><button id="restore-version" class="primary" disabled>确认恢复为新版本</button></div></dialog>
-<dialog id="recovery-dialog" class="wide-dialog"><div class="dialog-title"><h2>浏览器暂存</h2><button data-close="recovery-dialog" aria-label="关闭浏览器暂存">×</button></div><p>这里可能包含其他窗口正在编辑的内容。恢复前会核对差异，原暂存保留到保存成功。</p><div id="recovery-list"></div></dialog>
-<dialog id="merge-dialog" class="wide-dialog"><div class="dialog-title"><h2>核对并合并修改</h2><button id="merge-later">稍后处理</button></div><p id="merge-message"></p><div class="diff-grid"><details><summary>当前窗口原文</summary><pre id="merge-local"></pre></details><details><summary>最新保存版原文</summary><pre id="merge-latest"></pre></details></div><details><summary>共同原稿</summary><pre id="merge-base"></pre></details><div id="merge-blocks"></div><details><summary>核对合并后的文章信息</summary><pre id="merge-meta"></pre></details><label>建议合并结果<textarea id="merge-result" rows="10" readonly></textarea></label><p class="hint">冲突处可分别选择或手动编辑，确认后才会保存。</p><div class="dialog-actions"><span id="merge-unresolved" role="status"></span><button id="merge-confirm" class="primary" disabled>确认合并并保存</button></div></dialog>
-<dialog id="maintenance-dialog" class="wide-dialog" aria-labelledby="maintenance-title"><div class="dialog-title maintenance-title"><div><h2 id="maintenance-title">备份与空间</h2></div><button data-close="maintenance-dialog" aria-label="关闭备份与空间">×</button></div>
-<div class="maintenance-content">
-<p id="maintenance-message" role="status" class="maintenance-status" tabindex="-1" hidden></p>
-<div class="maintenance-grid"><section class="desk-card"><div class="card-heading"><h3>完整备份</h3><button id="maintenance-create" class="primary">生成备份</button></div><div id="archive-list"></div></section>
-<section class="desk-card"><div class="card-heading"><h3>恢复备份</h3><button id="workspace-choose" type="button">选择 ZIP</button></div><p class="empty-state" id="restore-empty">尚未选择备份</p><input id="workspace-file" type="file" accept="application/zip,.zip" hidden><div id="restore-review" hidden><pre id="restore-summary" tabindex="-1" aria-label="恢复摘要"></pre><button id="workspace-confirm" disabled>确认恢复独立副本</button></div></section></div>
-<section class="space-section desk-card"><div class="dialog-title"><h3>存储占用</h3><button id="storage-refresh">刷新</button></div><p id="space-summary"></p><div id="space-categories" class="space-categories"></div></section><section class="desk-card preview-storage"><div class="card-heading"><h3>预览管理</h3><button id="cleanup-plan" disabled>清理所选</button></div><div id="preview-storage-list"></div><div id="cleanup-review" class="cleanup-review" hidden><pre id="cleanup-summary" tabindex="-1" aria-label="清理摘要"></pre><div class="dialog-actions"><button id="cleanup-cancel">取消</button><button id="cleanup-confirm">确认清理</button></div></div></section></div></dialog>
-<script src="/vendor/easymde.js"></script><script src="/vendor/purify.js"></script><script type="module" src="/app.js"></script>
-</body></html>
+    <div id="editor-mode-bar" class="top-center" hidden>
+      <div class="view-switcher" role="group" aria-label="视图模式">
+        <button type="button" data-view-mode="edit" aria-pressed="true">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 2.5a1.4 1.4 0 0 1 2 2L5.5 12.5l-3 .7.7-3 8.3-7.7Z"/></svg>
+          <span>编辑</span>
+        </button>
+        <button type="button" id="quick-toggle" data-view-mode="split" aria-pressed="false">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M8 2.5v11"/></svg>
+          <span>分栏</span>
+        </button>
+        <button type="button" data-view-mode="preview" aria-pressed="false">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8Z"/><circle cx="8" cy="8" r="2"/></svg>
+          <span>预览</span>
+        </button>
+      </div>
+      <button type="button" id="zen-toggle" class="ghost-pill" aria-pressed="false" title="专注模式：隐藏两侧面板 (Alt+Z)">专注</button>
+    </div>
+
+    <nav class="top-actions" aria-label="工作台操作">
+      <span id="environment" class="health-pill" title="正在检查本机 Git 与 Docker 状态">正在检查环境</span>
+      <button type="button" id="publishing-open" class="nav-btn">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V3.5M4.5 7 8 3.5 11.5 7M3 13.5h10"/></svg>
+        <span>发布记录</span>
+        <span id="publishing-count" class="count" hidden></span>
+      </button>
+      <button type="button" id="maintenance-open" class="nav-btn">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="8" cy="4" rx="5.5" ry="2"/><path d="M2.5 4v4c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2V4"/><path d="M2.5 8v4c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2V8"/></svg>
+        <span>备份与空间</span>
+      </button>
+      <button type="button" id="theme-toggle" class="icon-btn" aria-label="切换到深色护眼模式" aria-pressed="false" title="切换深浅色主题">
+        <svg class="icon-sun" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="3.6"/><path d="M10 2.2v1.8M10 16v1.8M2.2 10H4M16 10h1.8M4.5 4.5l1.3 1.3M14.2 14.2l1.3 1.3M15.5 4.5l-1.3 1.3M5.8 14.2l-1.3 1.3"/></svg>
+        <svg class="icon-moon" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.2 12.4A6.8 6.8 0 0 1 7.6 3.8a6.8 6.8 0 1 0 8.6 8.6Z"/></svg>
+      </button>
+      <button type="button" id="new" class="primary">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+        <span>新建文章</span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="workspace" id="workspace-shell">
+    <!-- Column 1: Collapsible Library Sidebar -->
+    <aside class="library" id="library-pane" aria-label="文章与草稿库">
+      <div class="library-top">
+        <label class="search-box" aria-label="查找文章">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+          <input id="search" type="search" placeholder="搜索标题…" autocomplete="off">
+        </label>
+        <button class="ghost-btn import-label" id="import-choose" type="button" title="导入文章包 (.zip / .json)">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.8 7.5 8 10.7l3.2-3.2M2.5 13h11"/></svg>
+          <span>导入</span>
+        </button>
+        <input id="import-backup" type="file" accept="application/json,.json,application/zip,.zip" hidden>
+      </div>
+
+      <div class="library-scroll">
+        <div class="library-section">
+          <div class="library-section-head">
+            <button type="button" id="nav-drafts-home" class="section-head-btn" title="查看全部本地草稿概览">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 2.5H4.5A1.5 1.5 0 0 0 3 4v8a1.5 1.5 0 0 0 1.5 1.5h7A1.5 1.5 0 0 0 13 12V6L9.5 2.5Z"/><path d="M9.5 2.5V6H13M5.5 8.5h5M5.5 11h3.2"/></svg>
+              <span>本地草稿</span>
+            </button>
+            <div class="section-head-right">
+              <span id="draft-count" class="pill-count">0</span>
+              <button type="button" id="sidebar-new" class="mini-icon-btn" title="新建草稿" aria-label="新建草稿">＋</button>
+            </div>
+          </div>
+          <div id="draft-list" class="entry-list"></div>
+        </div>
+
+        <div class="library-section">
+          <div class="library-section-head">
+            <span class="section-head-label">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h4a2 2 0 0 1 2 2v8a1.5 1.5 0 0 0-1.5-1.5h-4.5v-8.5ZM13.5 3.5h-4a2 2 0 0 0-2 2v8a1.5 1.5 0 0 1 1.5-1.5h4.5v-8.5Z"/></svg>
+              <span>已发布文章</span>
+            </span>
+            <span id="post-count" class="pill-count">0</span>
+          </div>
+          <div id="post-list" class="entry-list"></div>
+        </div>
+
+        <details class="history">
+          <summary>
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3.2l2.2 1.3"/></svg>
+            <span>最近操作记录</span>
+          </summary>
+          <div id="job-list" class="entry-list compact-list"></div>
+        </details>
+      </div>
+    </aside>
+
+    <!-- Column 2: Main Canvas (Bento Welcome OR Immersive Document Editor) -->
+    <main id="canvas-pane">
+      <section id="recovery-banner" class="banner" hidden>
+        <div class="banner-text">
+          <span class="banner-dot"></span>
+          <span id="recovery-count"></span>
+        </div>
+        <button type="button" id="recovery-open" class="primary small-btn">查看暂存</button>
+      </section>
+
+      <section id="storage-warning" class="banner warning" hidden>
+        <span id="storage-warning-text"></span>
+        <div class="actions">
+          <button type="button" id="export-input" class="small-btn">导出当前正文</button>
+          <button type="button" id="copy-input" class="small-btn">复制正文</button>
+        </div>
+      </section>
+
+      <!-- Clean Full-Width Bento Welcome Screen -->
+      <section id="welcome" class="welcome">
+        <div class="welcome-hero">
+          <div>
+            <h1>写作台</h1>
+          </div>
+          <button type="button" id="welcome-new" class="primary hero-cta">＋ 新建文章</button>
+        </div>
+
+        <section class="bento-card drafts-showcase-card">
+          <div class="bento-card-head">
+            <div>
+              <span class="bento-kicker">RECENT DRAFTS</span>
+              <h2>继续最近的草稿</h2>
+            </div>
+            <span id="welcome-draft-total" class="bento-hint">0 篇草稿</span>
+          </div>
+          <div id="welcome-recent-drafts" class="recent-drafts-box">
+            <p class="empty">加载中…</p>
+          </div>
+        </section>
+
+        <button type="button" id="publish-overview" class="publication-card overview" hidden>
+          <span>
+            <small>最近一次 GitHub 发布任务</small>
+            <strong id="publish-overview-title"></strong>
+          </span>
+          <span id="publish-overview-status"></span>
+          <span class="overview-arrow" aria-hidden="true">查看进度 ↗</span>
+        </button>
+      </section>
+
+      <!-- Immersive Document Editor -->
+      <section id="article" class="article-shell" hidden>
+        <!-- Sticky Formatting & Action Sub-bar -->
+        <div class="editor-subbar">
+          <div class="md-toolbar" role="toolbar" aria-label="Markdown 格式化工具">
+            <button type="button" class="tool-btn" data-md="undo" title="撤销 (Ctrl+Z)" aria-label="撤销">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h6a3.5 3.5 0 1 1 0 7H6.5"/><path d="M6.5 3.5 4 6l2.5 2.5"/></svg>
+            </button>
+            <button type="button" class="tool-btn" data-md="redo" title="重做 (Ctrl+Y)" aria-label="重做">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6H6a3.5 3.5 0 1 0 0 7h3.5"/><path d="M9.5 3.5 12 6 9.5 8.5"/></svg>
+            </button>
+            <span class="tool-sep" aria-hidden="true"></span>
+            <button type="button" class="tool-btn text-tool" data-md="h2" title="二级章节标题" aria-label="二级标题">H2</button>
+            <button type="button" class="tool-btn text-tool" data-md="h3" title="三级小节标题" aria-label="三级标题">H3</button>
+            <button type="button" class="tool-btn text-tool" data-md="bold" title="粗体 (Ctrl+B)" aria-label="粗体"><strong>B</strong></button>
+            <button type="button" class="tool-btn text-tool" data-md="italic" title="斜体 (Ctrl+I)" aria-label="斜体"><em>I</em></button>
+            <button type="button" class="tool-btn" data-md="inline-code" title="行内代码" aria-label="行内代码">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5.5 5-3 3 3 3M10.5 5l3 3-3 3"/></svg>
+            </button>
+            <button type="button" class="tool-btn" data-md="quote" title="引用段落" aria-label="引用">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5h3v3h-3zM9.5 5.5h3v3h-3z"/><path d="M6.5 8.5c0 2-1 3-2.5 3.5M12.5 8.5c0 2-1 3-2.5 3.5"/></svg>
+            </button>
+            <span class="tool-sep" aria-hidden="true"></span>
+            <button type="button" class="tool-btn" data-md="ul" title="无序列表" aria-label="无序列表">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 4.5h7.5M6 8h7.5M6 11.5h7.5"/><circle cx="3.2" cy="4.5" r=".9" fill="currentColor" stroke="none"/><circle cx="3.2" cy="8" r=".9" fill="currentColor" stroke="none"/><circle cx="3.2" cy="11.5" r=".9" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <button type="button" class="tool-btn" data-md="ol" title="有序编号列表" aria-label="有序列表">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 4.5h7M6.5 8h7M6.5 11.5h7"/><path d="M2.8 3.5v3M2.3 9.2h1.5L2.3 11.5h1.6" stroke-width="1.3"/></svg>
+            </button>
+            <button type="button" class="tool-btn" data-md="table" title="插入数据表格" aria-label="插入表格">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6.5h12M2 9.8h12M6.5 3v10"/></svg>
+            </button>
+            <span class="tool-sep" aria-hidden="true"></span>
+            <button type="button" class="tool-btn" data-md="link" title="插入链接 (Ctrl+K)" aria-label="插入链接">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.8 9.2a3 3 0 0 0 4.2 0l2-2a3 3 0 0 0-4.2-4.2l-1.1 1"/><path d="M9.2 6.8a3 3 0 0 0-4.2 0l-2 2a3 3 0 0 0 4.2 4.2l1.1-1"/></svg>
+            </button>
+            <button type="button" class="tool-btn text-tool" data-md="codeblock" title="插入多行代码块" aria-label="代码块">{ }</button>
+            <button type="button" class="tool-btn text-tool" data-md="math" title="插入 LaTeX 数学公式" aria-label="数学公式">∑</button>
+            <label for="image-file" class="tool-btn tool-upload" title="插入本地图片（也支持直接粘贴或拖入）">
+              <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2.5" width="12" height="11" rx="1.8"/><circle cx="5.6" cy="6" r="1.1"/><path d="m3 12 3.5-3.5 2.5 2.5 2-2 2 3"/></svg>
+              <span>图片</span>
+            </label>
+            <input id="image-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+          </div>
+
+          <div class="doc-actions">
+            <button type="button" id="resolve-conflict" class="warning-btn" hidden>处理冲突</button>
+            <button type="button" id="save" class="ghost-btn" title="立即保存到本机 (Ctrl+S)">保存</button>
+            <button type="button" id="preview" class="ghost-btn" title="使用 Docker 构建真实 Chirpy 博客预览">真实预览</button>
+            <button type="button" id="prepare" class="primary small-primary">检查并发布</button>
+            <button type="button" id="toggle-inspector" class="icon-pill" aria-expanded="true" title="展开或收起右侧属性与大纲面板 (Alt+I)">
+              <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M12.5 3.5v13"/></svg>
+              <span>属性</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="pending-images" class="pending-strip" role="status"></div>
+
+        <!-- Writing & Live Split Stage -->
+        <div id="writing-stage" class="writing-stage" data-mode="edit">
+          <div id="editor-pane" class="editor-pane">
+            <div class="editor-sheet">
+              <div class="doc-header">
+                <textarea id="title" rows="1" class="hero-title-input" maxlength="200" placeholder="输入文章标题…" aria-label="文章标题"></textarea>
+                <div class="doc-meta-strip" id="doc-meta-strip" aria-label="文章元数据摘要">
+                  <button type="button" class="meta-pill" data-focus-meta="slug" id="chip-slug">/posts/待填短名称/</button>
+                  <button type="button" class="meta-pill" data-focus-meta="categories" id="chip-category">＋ 分类</button>
+                  <button type="button" class="meta-pill" data-focus-meta="description" id="chip-desc">添加摘要</button>
+                  <span class="meta-flags" id="chip-flags"></span>
+                </div>
+              </div>
+              <div class="editor-body-wrap">
+                <textarea id="body" aria-label="文章正文"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div id="preview-pane" class="preview-pane" aria-label="实时排版预览">
+            <div class="preview-sheet">
+              <div class="preview-header">
+                <span class="preview-kicker">LIVE PREVIEW · 实时排版预览</span>
+                <h1 id="preview-doc-title">未命名文章</h1>
+                <div id="preview-doc-meta" class="preview-meta-row"></div>
+                <p id="preview-doc-desc" class="preview-lead" hidden></p>
+              </div>
+              <div id="quick-preview" class="quick-preview" hidden></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtle Document Metrics Footer -->
+        <footer class="editor-footer">
+          <div class="metrics-left">
+            <span id="metric-words">0 字</span>
+            <span aria-hidden="true">·</span>
+            <span id="metric-readtime">约 1 分钟阅读</span>
+            <span aria-hidden="true">·</span>
+            <span id="metric-cursor">行 1, 列 1</span>
+          </div>
+          <div class="metrics-right">
+            <span>支持直接粘贴 / 拖拽图片入文 · <kbd>Ctrl+S</kbd> 保存</span>
+          </div>
+        </footer>
+      </section>
+
+      <div id="notice" role="alert" hidden></div>
+    </main>
+
+    <!-- Column 3: Right Collapsible Inspector & Outline Panel -->
+    <aside class="inspector" id="inspector-pane" aria-label="文章属性与目录大纲" hidden>
+      <div class="inspector-tabs" role="tablist" aria-label="辅助面板切换">
+        <button type="button" role="tab" id="tab-btn-meta" aria-selected="true" aria-controls="inspector-meta">文档属性</button>
+        <button type="button" role="tab" id="tab-btn-outline" aria-selected="false" aria-controls="inspector-outline">
+          <span>目录大纲</span>
+          <span id="outline-count" class="pill-count">0</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Metadata Bento Cards -->
+      <div id="inspector-meta" class="inspector-scroll" role="tabpanel" aria-labelledby="tab-btn-meta">
+        <section class="prop-card">
+          <div class="prop-card-title">路径与发布时间</div>
+          <div class="field-group">
+            <div class="field-label-row">
+              <label for="slug">英文短名称 (URL Slug)</label>
+              <button type="button" id="slug-suggest" class="mini-link">自动生成</button>
+            </div>
+            <input id="slug" placeholder="例如 fg-moe-notes" maxlength="100">
+            <small id="slug-preview" class="field-hint">公开路径：<code>/posts/…/</code></small>
+          </div>
+          <div class="field-group">
+            <div class="field-label-row">
+              <label for="date">发布时间 · 北京时间</label>
+              <button type="button" id="date-now" class="mini-link">设为当前</button>
+            </div>
+            <input id="date" type="datetime-local" step="1">
+          </div>
+        </section>
+
+        <section class="prop-card">
+          <div class="field-label-row">
+            <label for="description" class="prop-card-title">文章摘要</label>
+            <span id="desc-count" class="char-counter">0 / 120</span>
+          </div>
+          <textarea id="description" rows="3" placeholder="简明概括本文的核心问题、方法或读者收获（用于首页卡片与检索）。"></textarea>
+        </section>
+
+        <section class="prop-card">
+          <div class="prop-card-title">分类与标签</div>
+          <div class="field-group">
+            <label for="categories">分类（逗号分隔）</label>
+            <input id="categories" placeholder="研究记录">
+            <div class="preset-chips" data-chip-target="categories">
+              <button type="button" class="chip-btn" data-chip="研究记录">研究记录</button>
+              <button type="button" class="chip-btn" data-chip="工程实践">工程实践</button>
+              <button type="button" class="chip-btn" data-chip="阅读笔记">阅读笔记</button>
+              <button type="button" class="chip-btn" data-chip="随笔">随笔</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="tags">标签（逗号分隔）</label>
+            <input id="tags" placeholder="遥感，大模型，Agent">
+            <div class="preset-chips" data-chip-target="tags">
+              <button type="button" class="chip-btn" data-chip="遥感">#遥感</button>
+              <button type="button" class="chip-btn" data-chip="图像篡改检测">#图像篡改检测</button>
+              <button type="button" class="chip-btn" data-chip="大模型">#大模型</button>
+              <button type="button" class="chip-btn" data-chip="Agent">#Agent</button>
+              <button type="button" class="chip-btn" data-chip="科研工程">#科研工程</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="prop-card">
+          <div class="prop-card-title">渲染与展示开关</div>
+          <div class="switch-list">
+            <label class="switch-row">
+              <span><strong>首页置顶</strong><small>优先固定在博客文章列表顶部</small></span>
+              <input id="pin" type="checkbox">
+            </label>
+            <label class="switch-row">
+              <span><strong>生成目录 (TOC)</strong><small>长文右侧自动生成章节导航</small></span>
+              <input id="toc" type="checkbox" checked>
+            </label>
+            <label class="switch-row">
+              <span><strong>LaTeX 数学公式</strong><small>启用 MathJax 渲染行内与块级公式</small></span>
+              <input id="math" type="checkbox">
+            </label>
+            <label class="switch-row">
+              <span><strong>Mermaid 图表</strong><small>启用流程图、时序图代码块渲染</small></span>
+              <input id="mermaid" type="checkbox">
+            </label>
+          </div>
+        </section>
+
+        <section class="prop-card">
+          <div class="prop-card-title">版本历史与迁移</div>
+          <div class="inspector-actions">
+            <button type="button" id="history-button" class="full-btn">查看版本历史与红绿对比</button>
+            <button type="button" id="export" class="full-btn">导出完整独立文章包 (.zip)</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Tab 2: Live Interactive Document Outline -->
+      <div id="inspector-outline" class="inspector-scroll" role="tabpanel" aria-labelledby="tab-btn-outline" hidden>
+        <div id="outline-list" class="outline-list"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Dialog: Create New Draft -->
+  <dialog id="new-dialog">
+    <form id="new-form">
+      <div class="section-label">NEW ENTRY</div>
+      <h2>新建一篇文章</h2>
+      <label class="modal-field">文章标题
+        <input id="new-title" placeholder="输入标题（也可进入编辑器后再填）" maxlength="200">
+      </label>
+      <label class="modal-field">章节结构模板
+        <select id="template">
+          <option value="blank">空白文章</option>
+          <option value="research">研究记录（问题 → 方法 → 实验 → 局限）</option>
+          <option value="engineering">工程实践（需求 → 方案 → 验证 → 复现）</option>
+          <option value="reading">阅读笔记（问题 → 核心观点 → 思考）</option>
+          <option value="essay">随笔札记</option>
+        </select>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" data-close="new-dialog">取消</button>
+        <button class="primary">创建草稿</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Publishing Records -->
+  <dialog id="publishing-dialog" class="panel-dialog" aria-labelledby="publishing-title">
+    <div class="panel-header">
+      <div>
+        <div class="section-label">DEPLOYMENTS</div>
+        <h2 id="publishing-title">发布记录</h2>
+      </div>
+      <div class="actions">
+        <button type="button" id="publishing-refresh">刷新</button>
+        <button type="button" data-close="publishing-dialog" class="close-button" aria-label="关闭发布记录">×</button>
+      </div>
+    </div>
+    <div class="panel-content">
+      <p id="publishing-connection" class="maintenance-status" role="status" hidden></p>
+      <div id="publishing-list" class="publication-list"></div>
+    </div>
+  </dialog>
+
+  <!-- Dialog: Job Progress & Publish Confirmation -->
+  <dialog id="job-dialog" class="job-dialog panel-dialog" aria-labelledby="job-title">
+    <div class="panel-header">
+      <div>
+        <div id="job-badge"></div>
+        <h2 id="job-title">发布进度</h2>
+      </div>
+      <button type="button" data-close="job-dialog" class="close-button" aria-label="关闭进度窗口">×</button>
+    </div>
+    <div class="panel-content">
+      <p id="job-connection" class="maintenance-status" role="status" hidden></p>
+      <ol id="job-steps" class="steps"></ol>
+      <p id="job-message" role="status"></p>
+      <p id="job-warning" class="card-warning" role="status" hidden></p>
+      <div class="tracking-times">
+        <span id="job-checked"></span>
+        <span id="job-next"></span>
+      </div>
+      <details id="job-detail" hidden>
+        <summary>查看失败详情</summary>
+        <pre id="job-error-detail"></pre>
+      </details>
+      <details id="files-section" hidden>
+        <summary>本次发布文件清单</summary>
+        <ul id="job-files"></ul>
+      </details>
+      <details id="diff-section" hidden>
+        <summary>本次正文变化对比</summary>
+        <div class="diff-grid">
+          <section><h3>原内容</h3><pre id="before"></pre></section>
+          <section><h3>本次内容</h3><pre id="after"></pre></section>
+        </div>
+      </details>
+      <details>
+        <summary>构建与检查日志</summary>
+        <pre id="job-log"></pre>
+      </details>
+    </div>
+    <div class="panel-footer">
+      <a id="run-link" class="button" target="_blank" rel="noopener noreferrer" hidden>查看 Actions 详情 ↗</a>
+      <a id="live-link" class="button primary" target="_blank" rel="noopener noreferrer" hidden>打开线上文章 ↗</a>
+      <button type="button" id="show-preview" hidden>打开真实预览</button>
+      <button type="button" id="track" hidden>重新检查</button>
+      <button type="button" id="retry" class="primary" hidden>重试上传</button>
+      <button type="button" id="confirm" class="primary" hidden>确认发布到 GitHub</button>
+    </div>
+  </dialog>
+
+  <!-- Dialog: Real Jekyll/Chirpy Theme Preview -->
+  <dialog id="preview-dialog" class="preview-dialog">
+    <div class="dialog-title preview-bar">
+      <div>
+        <strong>真实主题预览</strong>
+        <small id="preview-version" role="status"></small>
+      </div>
+      <div class="actions">
+        <button type="button" id="desktop-view" aria-pressed="true">桌面视口</button>
+        <button type="button" id="mobile-view" aria-pressed="false">手机 375px</button>
+        <a id="preview-external" class="button" target="_blank" rel="noopener noreferrer">新窗口打开 ↗</a>
+        <button type="button" data-close="preview-dialog" class="close-button" aria-label="关闭预览">×</button>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <iframe id="preview-frame" title="博客真实主题预览"></iframe>
+    </div>
+  </dialog>
+
+  <!-- Dialog: Revision History -->
+  <dialog id="history-dialog" class="wide-dialog panel-dialog">
+    <div class="panel-header">
+      <div>
+        <div class="section-label">REVISION HISTORY</div>
+        <h2>版本历史与恢复</h2>
+      </div>
+      <button type="button" data-close="history-dialog" class="close-button" aria-label="关闭版本历史">×</button>
+    </div>
+    <div class="panel-content">
+      <p id="history-description" class="dialog-lead"></p>
+      <div class="history-grid">
+        <aside>
+          <div id="history-list" class="entry-list"></div>
+          <button type="button" id="history-more" class="full-btn">加载更多版本</button>
+        </aside>
+        <section>
+          <div id="history-diff"></div>
+          <details>
+            <summary>查看所选版本完整正文</summary>
+            <pre id="history-original"></pre>
+          </details>
+        </section>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button type="button" data-close="history-dialog">取消</button>
+      <button type="button" id="restore-version" class="primary" disabled>确认恢复为新版本</button>
+    </div>
+  </dialog>
+
+  <!-- Dialog: Browser IndexedDB Recovery -->
+  <dialog id="recovery-dialog" class="wide-dialog panel-dialog">
+    <div class="panel-header">
+      <div>
+        <div class="section-label">LOCAL RECOVERY</div>
+        <h2>浏览器未保存暂存</h2>
+      </div>
+      <button type="button" data-close="recovery-dialog" class="close-button" aria-label="关闭浏览器暂存">×</button>
+    </div>
+    <div class="panel-content">
+      <p class="dialog-lead">这里可能包含服务断开或其他窗口编辑的内容。恢复前可核对差异，原暂存保留到保存成功。</p>
+      <div id="recovery-list"></div>
+    </div>
+  </dialog>
+
+  <!-- Dialog: Three-Way Conflict Merge -->
+  <dialog id="merge-dialog" class="wide-dialog panel-dialog">
+    <div class="panel-header">
+      <div>
+        <div class="section-label">CONFLICT MERGE</div>
+        <h2>核对并合并多窗口修改</h2>
+      </div>
+      <button type="button" id="merge-later">稍后处理</button>
+    </div>
+    <div class="panel-content">
+      <p id="merge-message" class="dialog-lead"></p>
+      <div class="diff-grid">
+        <details><summary>当前窗口原文</summary><pre id="merge-local"></pre></details>
+        <details><summary>最新保存版原文</summary><pre id="merge-latest"></pre></details>
+      </div>
+      <details><summary>共同原稿</summary><pre id="merge-base"></pre></details>
+      <div id="merge-blocks"></div>
+      <details><summary>核对合并后的文章信息</summary><pre id="merge-meta"></pre></details>
+      <label class="modal-field">建议合并结果
+        <textarea id="merge-result" rows="10" readonly></textarea>
+      </label>
+      <p class="hint">冲突处可分别选择或手动编辑，确认后才会保存为新版本。</p>
+    </div>
+    <div class="panel-footer">
+      <span id="merge-unresolved" class="hint" role="status"></span>
+      <button type="button" id="merge-confirm" class="primary" disabled>确认合并并保存</button>
+    </div>
+  </dialog>
+
+  <!-- Dialog: Workspace Backup & Storage Maintenance -->
+  <dialog id="maintenance-dialog" class="wide-dialog" aria-labelledby="maintenance-title">
+    <div class="dialog-title maintenance-title">
+      <div>
+        <div class="section-label">WORKSPACE &amp; STORAGE</div>
+        <h2 id="maintenance-title">备份与空间</h2>
+      </div>
+      <button type="button" data-close="maintenance-dialog" class="close-button" aria-label="关闭备份与空间">×</button>
+    </div>
+    <div class="maintenance-content">
+      <p id="maintenance-message" role="status" class="maintenance-status" tabindex="-1" hidden></p>
+      <div class="maintenance-grid">
+        <section class="desk-card">
+          <div class="card-heading">
+            <h3>完整环境备份</h3>
+            <button type="button" id="maintenance-create" class="primary">生成备份</button>
+          </div>
+          <div id="archive-list"></div>
+        </section>
+        <section class="desk-card">
+          <div class="card-heading">
+            <h3>恢复独立副本</h3>
+            <button type="button" id="workspace-choose">选择 ZIP</button>
+          </div>
+          <div class="restore-dropzone" id="restore-empty" role="button" tabindex="0" aria-label="点击或拖入 ZIP 备份包">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V6M8 10l4-4 4 4"/><path d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/></svg>
+            <strong>点击选择或拖入完整备份 (.zip)</strong>
+            <small>先校验 SHA-256 与清单，再恢复到独立目录，绝不覆盖当前项目</small>
+          </div>
+          <input id="workspace-file" type="file" accept="application/zip,.zip" hidden>
+          <div id="restore-review" hidden>
+            <pre id="restore-summary" tabindex="-1" aria-label="恢复摘要"></pre>
+            <button type="button" id="workspace-confirm" class="primary full-btn" disabled>确认恢复独立副本</button>
+          </div>
+        </section>
+      </div>
+      <section class="space-section desk-card">
+        <div class="dialog-title">
+          <h3>存储占用统计</h3>
+          <button type="button" id="storage-refresh">刷新</button>
+        </div>
+        <p id="space-summary" class="hint"></p>
+        <div id="space-bar" class="space-bar" aria-hidden="true"></div>
+        <div id="space-categories" class="space-categories"></div>
+      </section>
+      <section class="desk-card preview-storage">
+        <div class="card-heading">
+          <h3>历史预览管理</h3>
+          <button type="button" id="cleanup-plan" disabled>清理所选</button>
+        </div>
+        <div id="preview-storage-list"></div>
+        <div id="cleanup-review" class="cleanup-review" hidden>
+          <pre id="cleanup-summary" tabindex="-1" aria-label="清理摘要"></pre>
+          <div class="dialog-actions">
+            <button type="button" id="cleanup-cancel">取消</button>
+            <button type="button" id="cleanup-confirm" class="primary">确认清理</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
+  <script src="/vendor/easymde.js"></script>
+  <script src="/vendor/purify.js"></script>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

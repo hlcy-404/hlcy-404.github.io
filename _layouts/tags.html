@@ -1,0 +1,97 @@
+---
+layout: page
+---
+
+<div class="editorial-tags">
+  {% assign tag_stat = '' %}
+  {% if site.tags.size > 0 %}
+    {% capture tag_stat %}共 {{ site.tags.size }} 个概念词条 · 覆盖 {{ site.posts.size }} 篇手记{% endcapture %}
+  {% endif %}
+
+  {% include atlas-index-header.html
+    active='tags'
+    eyebrow='CONCEPT & TAG INDEX'
+    lead='如同书末的主题与术语索引，点击上方概念胶囊可页内定位，亦可直达关联手记。'
+    stat=tag_stat
+  %}
+
+  {% if site.posts.size == 0 %}
+    <div class="atlas-index-empty">
+      <p>这里还没有公开的文章。</p>
+      <p>文章发布后，会在这里按时间、分类与标签整理。</p>
+      <a href="{{ '/' | relative_url }}">返回首页 →</a>
+    </div>
+  {% elsif site.tags.size == 0 %}
+    <div class="atlas-index-empty">
+      <p>现有文章暂未标注概念标签。可以先从 <a href="{{ '/archives/' | relative_url }}">全部文章</a> 开始阅读。</p>
+    </div>
+  {% else %}
+    {% assign raw_tags = '' | split: '' %}
+    {% for t in site.tags %}
+      {% assign raw_tags = raw_tags | push: t[0] %}
+    {% endfor %}
+    {% assign sorted_tags = raw_tags | sort_natural %}
+
+    <section class="tags-cloud-box" aria-label="概念标签速览">
+      <span class="atlas-eyebrow tags-cloud-label">KEY TERMS · 快速定位</span>
+      <div class="tags-cloud-pills">
+        {% for t in sorted_tags %}
+          <a class="editorial-tag-pill" href="#tag-term-{{ forloop.index }}">
+            <span class="pill-hash">#</span>
+            <span>{{ t | escape }}</span>
+            <small>{{ site.tags[t].size }}</small>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="tags-glossary-list">
+      {% for t in sorted_tags %}
+        {% assign tag_posts = site.tags[t] %}
+        {% capture tag_url %}/tags/{{ t | slugify | url_encode }}/{% endcapture %}
+
+        <section id="tag-term-{{ forloop.index }}" class="tag-glossary-row" aria-labelledby="tag-heading-{{ forloop.index }}">
+          <div class="tag-glossary-term">
+            <h2 id="tag-heading-{{ forloop.index }}">
+              <a href="{{ tag_url | relative_url }}">
+                <span class="term-hash">#</span>{{ t | escape }}
+              </a>
+            </h2>
+            <p class="tag-term-sub">
+              <span>{{ tag_posts.size }} 篇关联记录</span>
+              <span aria-hidden="true">·</span>
+              <a href="{{ tag_url | relative_url }}">独立标签页 →</a>
+            </p>
+          </div>
+
+          <div class="tag-glossary-posts">
+            {% for post in tag_posts %}
+              {% assign summary = post.description | default: post.excerpt | strip_html | normalize_whitespace | truncate: 115 %}
+              <article class="tag-post-item">
+                <div class="tag-post-top">
+                  <h3 class="tag-post-title">
+                    <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                  </h3>
+                  <time datetime="{{ post.date | date_to_xmlschema }}" class="tag-post-date">{{ post.date | date: '%Y.%m.%d' }}</time>
+                </div>
+                {% if summary != '' %}
+                  <p class="tag-post-summary">{{ summary | escape }}</p>
+                {% endif %}
+                <div class="tag-post-meta">
+                  {% for cat in post.categories %}
+                    <a class="archive-cat-pill" href="{{ cat | slugify | url_encode | prepend: '/categories/' | append: '/' | relative_url }}">{{ cat | escape }}</a>
+                  {% endfor %}
+                  <a class="tag-post-read" href="{{ post.url | relative_url }}">阅读手记 →</a>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+
+    <footer class="archive-colophon">
+      <p>术语索引随新发布的研究与工程记录自动扩充；如需按宏观专题或时间脉络浏览，可切换至 <a href="{{ '/categories/' | relative_url }}">主题分类</a> 或 <a href="{{ '/archives/' | relative_url }}">全部文章</a>。</p>
+    </footer>
+  {% endif %}
+</div>

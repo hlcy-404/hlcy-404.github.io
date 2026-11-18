@@ -1,9 +1,13 @@
-# Interests are based on the owner's stated work, not completed achievements.
-eyebrow: A PERSONAL FIELD GUIDE
-headline: 让想法，
-headline_accent: 在实践中生长。
-intro: 你好，我是 hlcy，研究聚焦遥感图像篡改检测与解释，也关注大模型、Agent 与科研工程。
+# Editorial copy grounded in the author's genuine focus; resume details live in /about/.
+eyebrow: FIELD NOTES · 个人探索手记
+headline_line1: 让想法，
+headline_line2: 在实践中
+headline_accent: 生长。
+intro: 你好，我是 hlcy。这里记录我在遥感视觉、大模型与科研工程中的观察、求证与沿途思考。
 signature: 保持好奇，持续求证。
+plate_caption: 观察 · 求证 · 生长
+plate_en: OBSERVE · VERIFY · GROW
+
 topics:
   - id: research
     number: '01'
@@ -11,24 +15,24 @@ topics:
     english: Research
     title: 从问题出发
     subtitle: 观察 · 阅读 · 求证
-    description: 关注人工智能与计算技术中的问题、方法和证据，把阅读中的线索整理成可继续探索的方向。
-    keywords: [人工智能, 计算技术, 大模型]
-    note: 好的问题，是探索的起点。
+    description: 聚焦遥感图像篡改检测与解释，关注经典信号处理先验与深度表征的结合，把阅读与实验中的线索整理成可继续推演的方向。
+    keywords: [遥感视觉, 频域先验, 混合专家]
+    note: 好的问题，是一切探索的起点。
   - id: build
     number: '02'
     label: 构建
     english: Build
     title: 让想法落地
     subtitle: 设计 · 实现 · 复现
-    description: 关注大模型、Agent 与科研工程，记录从原型到可运行系统的过程，以及实现中的判断与取舍。
+    description: 关注大模型、Agent 与科研工程，记录从最初原型到可复现、可维护系统的构建过程，以及真实约束下的判断与取舍。
     keywords: [Agent, 科研工程, 可复现]
-    note: 在真实的约束中，检验一个想法。
+    note: 在真实的约束里，检验一个想法。
   - id: notes
     number: '03'
     label: 记录
     english: Notes
     title: 为思考留痕
     subtitle: 整理 · 连接 · 回看
-    description: 为尚在形成的思考留一个位置，记录阅读、实践与日常观察，让零散的线索慢慢建立联系。
-    keywords: [阅读笔记, 方法整理, 随笔]
+    description: 为尚在生长的思考留一页安静的纸面，记录文献阅读、实验复盘与日常观察，让零散的灵感在时间里慢慢建立联系。
+    keywords: [阅读手记, 方法整理, 随笔]
     note: 记录，是与未来的自己对话。

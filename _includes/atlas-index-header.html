@@ -1,0 +1,27 @@
+<div class="archives-intro-bar">
+  <div class="archives-intro-copy">
+    <p class="atlas-eyebrow">{{ include.eyebrow }}</p>
+    <p class="archives-lead">{{ include.lead }}</p>
+  </div>
+  {% if include.stat and include.stat != '' %}
+    <div class="archives-stat-pill">{{ include.stat }}</div>
+  {% endif %}
+</div>
+
+<nav class="atlas-index-switch" aria-label="目录检索方式">
+  <a href="{{ '/archives/' | relative_url }}" class="index-switch-tab{% if include.active == 'archives' %} is-active{% endif %}"{% if include.active == 'archives' %} aria-current="page"{% endif %}>
+    {% include atlas-icon.html name='book' %}
+    <span>按时间编年</span>
+    <small>{{ site.posts.size }}</small>
+  </a>
+  <a href="{{ '/categories/' | relative_url }}" class="index-switch-tab{% if include.active == 'categories' %} is-active{% endif %}"{% if include.active == 'categories' %} aria-current="page"{% endif %}>
+    {% include atlas-icon.html name='grid' %}
+    <span>按主题分类</span>
+    <small>{{ site.categories.size }}</small>
+  </a>
+  <a href="{{ '/tags/' | relative_url }}" class="index-switch-tab{% if include.active == 'tags' %} is-active{% endif %}"{% if include.active == 'tags' %} aria-current="page"{% endif %}>
+    {% include atlas-icon.html name='tag' %}
+    <span>按标签索引</span>
+    <small>{{ site.tags.size }}</small>
+  </a>
+</nav>

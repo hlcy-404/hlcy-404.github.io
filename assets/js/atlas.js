@@ -9,7 +9,8 @@
       button.setAttribute('aria-pressed', String(dark));
       button.setAttribute('aria-label', dark ? '切换到日间模式' : '切换到夜间模式');
     });
-    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => { meta.content = dark ? '#14170f' : '#f6f1e7'; });
+    const themeColor = getComputedStyle(document.body).getPropertyValue('--atlas-bg').trim();
+    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => { meta.content = themeColor; });
   }
   reflectTheme();
   themeButtons.forEach(button => button.addEventListener('click', () => {
@@ -18,14 +19,19 @@
     reflectTheme();
     window.postMessage({ direction: 'mode-toggle', message: root.dataset.mode }, window.location.origin);
   }));
+
   const tabs = [...document.querySelectorAll('.atlas-topic-tabs [role="tab"]')];
+  const specimen = document.querySelector('.atlas-specimen');
   function selectTab(tab) {
     tabs.forEach(item => {
       const active = item === tab;
-      item.setAttribute('aria-selected', String(active)); item.tabIndex = active ? 0 : -1;
+      item.setAttribute('aria-selected', String(active));
+      item.tabIndex = active ? 0 : -1;
       document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
     });
-    document.querySelector('.atlas-specimen')?.setAttribute('data-topic', tab.id.replace('tab-', ''));
+    if (specimen && tab.dataset.topicId) {
+      specimen.dataset.topic = tab.dataset.topicId;
+    }
   }
   tabs.forEach((tab, index) => {
     tab.addEventListener('click', () => selectTab(tab));
@@ -38,6 +44,7 @@
       if (next) { event.preventDefault(); selectTab(next); next.focus(); }
     });
   });
+
   const search = document.getElementById('atlas-search');
   if (!search) return;
   const posts = [...document.querySelectorAll('.atlas-post')];
@@ -45,10 +52,12 @@
   const noResults = document.querySelector('.atlas-no-results');
   let category = '';
   function filterPosts() {
-    const query = search.value.trim().toLocaleLowerCase(); let count = 0;
+    const query = search.value.trim().toLocaleLowerCase();
+    let count = 0;
     posts.forEach(post => {
       const matches = (!category || JSON.parse(post.dataset.categories).includes(category)) && post.dataset.search.toLocaleLowerCase().includes(query);
-      post.hidden = !matches; if (matches) count++;
+      post.hidden = !matches;
+      if (matches) count++;
     });
     noResults.hidden = count > 0 || posts.length === 0;
     document.querySelector('.atlas-result-count').textContent = posts.length ? `找到 ${count} 篇文章` : '目前没有公开文章';

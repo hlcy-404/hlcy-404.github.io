@@ -215,6 +215,7 @@ exclude:
   - "*.config.js"
   - package*.json
   - AGENTS.md
+  - design-qa.md
   - compose.yaml
   - "*.cmd"
 

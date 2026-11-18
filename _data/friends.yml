@@ -3,9 +3,10 @@
 - name: 方成杰
   english_name: Fang C. Jie
   monogram: FCJ
-  photo: /assets/img/friends/fang-chengjie.png
-  photo_width: 1988
-  photo_height: 2564
+  photo: /assets/img/friends/fang-chengjie-360.jpg
+  original_photo: /assets/img/friends/fang-chengjie.png
+  photo_width: 360
+  photo_height: 464
   relationship: 论文共创者
   description: 与我共同参与 FG-MoE 研究，探索遥感影像中的伪造目标感知。
   biography: |
@@ -29,9 +30,10 @@
 - name: 唐治江
   english_name: Zhijiang Tang
   monogram: ZT
-  photo: /assets/img/friends/tang-zhijiang.png
-  photo_width: 1080
-  photo_height: 1440
+  photo: /assets/img/friends/tang-zhijiang-360.jpg
+  original_photo: /assets/img/friends/tang-zhijiang.png
+  photo_width: 360
+  photo_height: 480
   relationship: 室友
   description: 我的室友，关注时序预测、医学影像分析与 AI for Science。
   biography: |

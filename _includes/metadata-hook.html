@@ -1,5 +1,8 @@
 {% assign atlas_version = site.time | date: '%s' %}
 {% if page.studio_revision %}<meta name="studio-revision" content="{{ page.studio_revision | escape }}">{% endif %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Noto+Serif+SC:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="{{ '/assets/css/atlas.css' | relative_url }}?v={{ atlas_version }}">
 <script src="{{ '/assets/js/atlas-theme.js' | relative_url }}?v={{ atlas_version }}"></script>
 <script src="{{ '/assets/js/atlas.js' | relative_url }}?v={{ atlas_version }}" defer></script>

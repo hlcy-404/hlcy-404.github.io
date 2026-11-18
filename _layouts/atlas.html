@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f1e7">
+  <meta name="theme-color" content="#f6f2e9">
   {% seo %}
   <link rel="alternate" type="application/atom+xml" title="{{ site.title | escape }}" href="{{ '/feed.xml' | relative_url }}">
   {% include_cached favicons.html %}
@@ -12,44 +12,149 @@
 <body class="atlas-home">
   <a href="#main-content" class="atlas-skip">跳到主要内容</a>
   <aside class="atlas-sidebar" aria-label="站点导航">{% include atlas-navigation.html %}</aside>
+
   <div class="atlas-workspace">
     <header class="atlas-topbar">
-      <a class="atlas-mobile-brand" href="{{ '/' | relative_url }}">hlcy<span> / FIELD NOTES</span></a>
-      <div class="atlas-breadcrumb">个人探索手册 <span>/</span> <span>首页</span></div>
-      <div class="atlas-top-actions"><a class="atlas-search-trigger" href="#writing" data-search-focus aria-label="搜索文章">{% include atlas-icon.html name='search' %}<span>搜索文章</span><kbd>/</kbd></a><button type="button" class="atlas-mobile-theme" data-theme-toggle aria-label="切换到夜间模式" aria-pressed="false">{% include atlas-icon.html name='sun' %}</button><a class="atlas-profile-link" href="{{ '/about/' | relative_url }}" aria-label="关于 hlcy"><img src="{{ site.avatar | relative_url }}" width="32" height="32" alt=""></a></div>
-    </header>
-    <nav class="atlas-mobile-nav" aria-label="移动端导航"><a href="{{ '/' | relative_url }}" aria-current="page">首页</a><a href="{{ '/archives/' | relative_url }}">文章</a><a href="{{ '/categories/' | relative_url }}">分类</a><a href="{{ '/tags/' | relative_url }}">标签</a><a href="{{ '/about/' | relative_url }}">关于</a><a href="{{ '/friends/' | relative_url }}">友链</a></nav>
-    <main id="main-content" class="atlas-content" tabindex="-1">
-      <div class="atlas-intro-grid">
-        <section class="atlas-hero" aria-labelledby="atlas-title">
-          <div class="atlas-hero-top"><span class="atlas-eyebrow">{{ site.data.atlas.eyebrow }}</span><span class="atlas-volume">VOL. 01 <span>↗</span></span></div>
-          <h1 id="atlas-title">{{ site.data.atlas.headline }}<br><em>{{ site.data.atlas.headline_accent }}</em></h1>
-          <p class="atlas-intro">{{ site.data.atlas.intro }}</p>
-          <figure class="atlas-specimen">{% include atlas-sculpture.svg %}<figcaption><span class="atlas-figure-index">FIG. 01</span> 思考的形状 <span class="atlas-figure-en">THE SHAPE OF AN IDEA</span></figcaption></figure>
-          <div class="atlas-hero-foot"><span class="atlas-dot"></span>{{ site.data.atlas.signature }}<span class="atlas-scroll-note">向下探索 ↓</span></div>
-        </section>
-        <aside class="atlas-field-card" aria-label="研究与创作方向">
-          <div class="atlas-card-head"><span class="atlas-eyebrow">EXPLORATION INDEX</span>{% include atlas-icon.html name='layers' %}</div><h2>正在关注的事</h2><p class="atlas-card-caption">在不同视角之间，发现连接。</p>
-          <div class="atlas-topic-tabs" role="tablist" aria-label="探索方向">{% for topic in site.data.atlas.topics %}<button type="button" role="tab" id="tab-{{ topic.id }}" aria-controls="panel-{{ topic.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}">{{ topic.label }}</button>{% endfor %}</div>
-          {% for topic in site.data.atlas.topics %}<div id="panel-{{ topic.id }}" class="atlas-topic-panel" role="tabpanel" aria-labelledby="tab-{{ topic.id }}" tabindex="0" {% unless forloop.first %}hidden{% endunless %}><div class="atlas-topic-number">{{ topic.number }}<span>/ {{ topic.english }}</span></div><h3>{{ topic.title }}</h3><p class="atlas-topic-subtitle">{{ topic.subtitle }}</p><p class="atlas-topic-description">{{ topic.description }}</p><div class="atlas-chips">{% for keyword in topic.keywords %}<span>{{ keyword }}</span>{% endfor %}</div><p class="atlas-topic-note">{{ topic.note }}</p></div>{% endfor %}
-          <a class="atlas-author" href="{{ '/about/' | relative_url }}"><img src="{{ site.avatar | relative_url }}" alt="" width="44" height="44"><span>你好，我是 hlcy<small>更多关于我</small></span>{% include atlas-icon.html name='external' %}</a>
-        </aside>
+      <a class="atlas-mobile-brand" href="{{ '/' | relative_url }}">hlcy<span>FIELD NOTES</span></a>
+      <div class="atlas-breadcrumb">个人探索手记 <span>/</span> <span>首页</span></div>
+      <div class="atlas-top-actions">
+        <a class="atlas-search-trigger" href="#writing" data-search-focus aria-label="搜索文章">
+          {% include atlas-icon.html name='search' %}
+          <span>搜索文章</span>
+          <kbd>/</kbd>
+        </a>
+        <button type="button" class="atlas-mobile-theme" data-theme-toggle aria-label="切换到夜间模式" aria-pressed="false">
+          <span class="theme-icon-sun">{% include atlas-icon.html name='sun' %}</span>
+          <span class="theme-icon-moon">{% include atlas-icon.html name='moon' %}</span>
+        </button>
+        <a class="atlas-profile-link" href="{{ '/about/' | relative_url }}" aria-label="关于 hlcy">
+          <img src="{{ site.avatar | relative_url }}" width="30" height="30" alt="">
+        </a>
       </div>
+    </header>
+
+    <nav class="atlas-mobile-nav" aria-label="移动端导航">
+      <a href="{{ '/' | relative_url }}" aria-current="page">首页</a>
+      <a href="{{ '/archives/' | relative_url }}">文章</a>
+      <a href="{{ '/categories/' | relative_url }}">分类</a>
+      <a href="{{ '/tags/' | relative_url }}">标签</a>
+      <a href="{{ '/about/' | relative_url }}">关于</a>
+      <a href="{{ '/friends/' | relative_url }}">友链</a>
+    </nav>
+
+    <main id="main-content" class="atlas-content" tabindex="-1">
+      <!-- First Screen: Poetic Breathing Space & Fine-Line Specimen Art -->
+      <section class="editorial-hero" aria-labelledby="atlas-title">
+        <div class="editorial-hero-grid">
+          <div class="editorial-copy">
+            <span class="atlas-eyebrow">{{ site.data.atlas.eyebrow }}</span>
+            <h1 id="atlas-title">
+              <span>{{ site.data.atlas.headline_line1 }}</span>
+              <span>{{ site.data.atlas.headline_line2 }}<em>{{ site.data.atlas.headline_accent }}</em></span>
+            </h1>
+            <p class="atlas-intro">{{ site.data.atlas.intro }}</p>
+            <div class="editorial-actions">
+              <a class="editorial-read-btn" href="#writing">
+                <span>阅读沿途记录</span>
+                <span class="down-glyph" aria-hidden="true">↓</span>
+              </a>
+              <a class="editorial-subtle-link" href="{{ '/about/' | relative_url }}">关于我与研究经历 →</a>
+            </div>
+          </div>
+
+          <figure class="atlas-specimen" data-topic="research">
+            {% include atlas-horizon-art.html %}
+            <figcaption>
+              <span class="atlas-figure-index">Fig. 01</span>
+              <span>{{ site.data.atlas.plate_caption }}</span>
+              <span class="atlas-figure-en">{{ site.data.atlas.plate_en }}</span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="atlas-hero-foot">
+          <span class="atlas-dot" aria-hidden="true"></span>
+          <span>{{ site.data.atlas.signature }}</span>
+          <span class="atlas-scroll-note">Journal &amp; Reflections</span>
+        </div>
+      </section>
+
+      <!-- Second Screen: Inviting Magazine Article Flow -->
       {% assign visible_posts = site.posts | where_exp: 'post', 'post.hidden != true' %}
       {% assign pinned_posts = visible_posts | where: 'pin', true %}
       {% assign other_posts = visible_posts | where_exp: 'post', 'post.pin != true' %}
       {% assign public_posts = pinned_posts | concat: other_posts %}
+
       <section id="writing" class="atlas-writing" aria-labelledby="writing-title">
-        <div class="atlas-section-heading"><div><span class="atlas-eyebrow">THE NOTEBOOK</span><h2 id="writing-title">沿途的记录<span>{{ public_posts.size | prepend: ' / ' }}</span></h2></div></div>
-        <div class="atlas-writing-tools"><div class="atlas-filters" role="group" aria-label="按分类筛选"><button type="button" aria-pressed="true" data-category="">全部</button>{% for category in site.categories %}<button type="button" aria-pressed="false" data-category="{{ category[0] | escape }}">{{ category[0] | escape }}</button>{% endfor %}</div><label class="atlas-search">{% include atlas-icon.html name='search' %}<span class="atlas-sr-only">搜索文章标题、摘要或标签</span><input id="atlas-search" type="search" placeholder="搜索标题、摘要、标签…" autocomplete="off"></label></div>
-        <p class="atlas-result-count atlas-sr-only" role="status" aria-live="polite"></p>
-        <div class="atlas-posts">
-          {% for post in public_posts %}<article class="atlas-post" data-search="{{ post.title | append: ' ' | append: post.description | escape }} {{ post.tags | join: ' ' | escape }} {{ post.categories | join: ' ' | escape }}" data-categories="{{ post.categories | jsonify | escape }}"><div class="atlas-post-date"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>{% if post.pin %}<span>置顶</span>{% endif %}</div><div><span class="atlas-post-category">{{ post.categories | join: ' / ' | escape }}</span><h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3><p>{{ post.description | default: post.excerpt | strip_html | truncate: 130 | escape }}</p><div class="atlas-post-tags">{% for tag in post.tags limit: 4 %}<span>#{{ tag | escape }}</span>{% endfor %}</div></div><a class="atlas-post-arrow" href="{{ post.url | relative_url }}" aria-label="阅读 {{ post.title | escape }}">{% include atlas-icon.html name='external' %}</a></article>
-          {% else %}<div class="atlas-empty"><div class="atlas-empty-mark">{% include atlas-icon.html name='book' %}<span>01</span></div><div><h3>留一页，给下一次发现。</h3><p>这里还没有公开的文章。新的思考与实践，会从这里开始。</p></div><a href="{{ '/feed.xml' | relative_url }}">订阅后续更新 {% include atlas-icon.html name='arrow' %}</a></div>{% endfor %}
+        <div class="atlas-section-heading">
+          <div>
+            <span class="atlas-eyebrow">THE NOTEBOOK</span>
+            <h2 id="writing-title">沿途的记录<span>{{ public_posts.size | prepend: ' / ' }}</span></h2>
+          </div>
+          <a class="editorial-subtle-link" href="{{ '/archives/' | relative_url }}">全部归档 →</a>
         </div>
-        <div class="atlas-no-results" hidden><p>没有找到匹配的文章。</p><button type="button" data-reset-search>清除搜索与筛选</button></div>
+
+        <div class="atlas-writing-tools">
+          <div class="atlas-filters" role="group" aria-label="按分类筛选">
+            <button type="button" aria-pressed="true" data-category="">全部</button>
+            {% for category in site.categories %}
+            <button type="button" aria-pressed="false" data-category="{{ category[0] | escape }}">{{ category[0] | escape }}</button>
+            {% endfor %}
+          </div>
+          <label class="atlas-search">
+            {% include atlas-icon.html name='search' %}
+            <span class="atlas-sr-only">搜索文章标题、摘要或标签</span>
+            <input id="atlas-search" type="search" placeholder="检索标题、摘要或标签…" autocomplete="off">
+          </label>
+        </div>
+
+        <p class="atlas-result-count atlas-sr-only" role="status" aria-live="polite"></p>
+
+        <div class="atlas-posts">
+          {% for post in public_posts %}
+          <article class="atlas-post" data-search="{{ post.title | append: ' ' | append: post.description | escape }} {{ post.tags | join: ' ' | escape }} {{ post.categories | join: ' ' | escape }}" data-categories="{{ post.categories | jsonify | escape }}">
+            <div class="atlas-post-date">
+              <span class="post-num">No. {{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+              {% if post.pin %}<span class="pin-mark">置顶推荐</span>{% endif %}
+            </div>
+            <div class="atlas-post-body">
+              {% if post.categories.size > 0 %}<span class="atlas-post-category">{{ post.categories | join: ' · ' | escape }}</span>{% endif %}
+              <h3><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
+              <p>{{ post.description | default: post.excerpt | strip_html | truncate: 150 | escape }}</p>
+              <div class="atlas-post-tags">
+                {% for tag in post.tags limit: 5 %}<span>#{{ tag | escape }}</span>{% endfor %}
+              </div>
+            </div>
+            <a class="atlas-post-arrow" href="{{ post.url | relative_url }}" aria-label="阅读 {{ post.title | escape }}">
+              <span>阅读全文</span>
+              {% include atlas-icon.html name='arrow' %}
+            </a>
+          </article>
+          {% else %}
+          <div class="atlas-empty">
+            <div class="atlas-empty-mark">{% include atlas-icon.html name='book' %}<span>01</span></div>
+            <div>
+              <h3>留一页空白，给下一次发现。</h3>
+              <p>这里还没有公开的文章。新的思考与实践，会从这里开始生长。</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="atlas-no-results" hidden>
+          <p>未找到与当前条件相符的文章记录。</p>
+          <button type="button" data-reset-search>清除搜索与筛选</button>
+        </div>
       </section>
-      <footer class="atlas-footer"><span>© {{ site.time | date: '%Y' }} {{ site.social.name }}<span class="atlas-footer-divider">/</span> 研究、构建与记录</span><span>Built with <a href="https://jekyllrb.com/">Jekyll</a> &amp; <a href="https://github.com/cotes2020/jekyll-theme-chirpy">Chirpy</a><a href="{{ '/feed.xml' | relative_url }}">RSS ↗</a></span></footer>
+
+      <!-- Third Section: Calm Editorial Perspectives -->
+      {% include atlas-exploration.html %}
+
+      <footer class="atlas-footer">
+        <span>© {{ site.time | date: '%Y' }} {{ site.social.name }}<span class="atlas-footer-divider">·</span>研究、构建与记录</span>
+        <span>Typeset on <a href="https://jekyllrb.com/" target="_blank" rel="noopener noreferrer">Jekyll</a> &amp; <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener noreferrer">Chirpy</a></span>
+      </footer>
     </main>
   </div>
 </body>

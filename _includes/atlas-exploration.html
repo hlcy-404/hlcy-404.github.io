@@ -1,0 +1,32 @@
+<aside class="atlas-field-card" aria-label="研究与创作方向">
+  <div class="atlas-card-head">
+    <div>
+      <span class="atlas-eyebrow">PERSPECTIVES · 关注维度</span>
+      <h2>正在关注的事</h2>
+    </div>
+    <div class="atlas-topic-tabs" role="tablist" aria-label="探索方向">
+      {% for topic in site.data.atlas.topics %}
+      <button type="button" role="tab" id="tab-{{ topic.id }}" data-topic-id="{{ topic.id }}" aria-controls="panel-{{ topic.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}">{{ topic.label }}</button>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% for topic in site.data.atlas.topics %}
+  <div id="panel-{{ topic.id }}" class="atlas-topic-panel" role="tabpanel" aria-labelledby="tab-{{ topic.id }}" tabindex="0" {% unless forloop.first %}hidden{% endunless %}>
+    <div class="atlas-topic-grid">
+      <div class="atlas-topic-lead">
+        <div class="atlas-topic-number">{{ topic.number }}<span>/ {{ topic.english }}</span></div>
+        <h3>{{ topic.title }}</h3>
+        <p class="atlas-topic-subtitle">{{ topic.subtitle }}</p>
+      </div>
+      <div class="atlas-topic-body">
+        <p class="atlas-topic-description">{{ topic.description }}</p>
+        <div class="atlas-chips">
+          {% for keyword in topic.keywords %}<span>{{ keyword }}</span>{% endfor %}
+        </div>
+        <p class="atlas-topic-note">“{{ topic.note }}”</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</aside>

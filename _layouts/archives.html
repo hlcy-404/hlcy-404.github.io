@@ -1,0 +1,85 @@
+---
+layout: page
+---
+
+<div class="editorial-archives">
+  {% assign archive_stat = '' %}
+  {% if site.posts.size > 0 %}
+    {% assign latest_y = site.posts.first.date | date: '%Y' %}
+    {% assign earliest_y = site.posts.last.date | date: '%Y' %}
+    {% if latest_y == earliest_y %}
+      {% capture archive_stat %}共 {{ site.posts.size }} 篇公开手记 · {{ latest_y }}{% endcapture %}
+    {% else %}
+      {% capture archive_stat %}共 {{ site.posts.size }} 篇公开手记 · {{ earliest_y }} — {{ latest_y }}{% endcapture %}
+    {% endif %}
+  {% endif %}
+
+  {% include atlas-index-header.html
+    active='archives'
+    eyebrow='CHRONOLOGICAL INDEX'
+    lead='按定稿时间脉络，收录公开的研究解读、系统构建与沿途手记。'
+    stat=archive_stat
+  %}
+
+  {% if site.posts.size == 0 %}
+    <div class="atlas-index-empty">
+      <p>这里还没有公开的文章。</p>
+      <p>文章发布后，会在这里按时间、分类与标签整理。</p>
+      <a href="{{ '/' | relative_url }}">返回首页 →</a>
+    </div>
+  {% else %}
+    {% assign posts_by_year = site.posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+    <div class="archives-chronicle">
+      {% for year_group in posts_by_year %}
+        <section class="archive-year-group" aria-labelledby="archive-year-{{ year_group.name }}">
+          <div class="archive-year-rail">
+            <h2 id="archive-year-{{ year_group.name }}" class="archive-year-title">{{ year_group.name }}</h2>
+            <span class="archive-year-count">{{ year_group.items.size }} 篇记录</span>
+          </div>
+
+          <div class="archive-year-list">
+            {% for post in year_group.items %}
+              {% assign summary = post.description | default: post.excerpt | strip_html | normalize_whitespace | truncate: 155 %}
+              <article class="archive-entry">
+                <span class="archive-entry-dot" aria-hidden="true"></span>
+                <div class="archive-entry-card">
+                  <div class="archive-entry-meta">
+                    <time datetime="{{ post.date | date_to_xmlschema }}" class="archive-entry-date">{{ post.date | date: '%m 月 %d 日' }}</time>
+                    {% if post.pin %}<span class="archive-pin-pill">精选</span>{% endif %}
+                    {% for cat in post.categories %}
+                      <a class="archive-cat-pill" href="{{ cat | slugify | url_encode | prepend: '/categories/' | append: '/' | relative_url }}">{{ cat | escape }}</a>
+                    {% endfor %}
+                  </div>
+
+                  <h3 class="archive-entry-heading">
+                    <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+                  </h3>
+
+                  {% if summary != '' %}
+                    <p class="archive-entry-excerpt">{{ summary | escape }}</p>
+                  {% endif %}
+
+                  <div class="archive-entry-foot">
+                    <div class="archive-entry-tags">
+                      {% for tag in post.tags limit: 4 %}
+                        <a class="archive-tag-item" href="{{ tag | slugify | url_encode | prepend: '/tags/' | append: '/' | relative_url }}"># {{ tag | escape }}</a>
+                      {% endfor %}
+                    </div>
+                    <a class="archive-entry-cta" href="{{ post.url | relative_url }}" aria-label="阅读《{{ post.title | escape }}》">
+                      <span>阅读手记</span>
+                      {% include atlas-icon.html name='arrow' %}
+                    </a>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+
+    <footer class="archive-colophon">
+      <p>此处按定稿时间收录已公开的研究解读与工程记录；日常推演草稿在沉淀核验后陆续增补。也可前往 <a href="{{ '/' | relative_url }}">首页</a> 按脉络导读，或在 <a href="{{ '/about/' | relative_url }}">关于我</a> 了解研究背景与代表项目。</p>
+    </footer>
+  {% endif %}
+</div>

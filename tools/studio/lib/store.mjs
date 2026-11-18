@@ -74,7 +74,21 @@ export class Store {
   async list() {
     const folder = path.join(this.data, 'drafts'); await fs.mkdir(folder, { recursive: true });
     const drafts = [];
-    for (const entry of await fs.readdir(folder)) if (await exists(path.join(folder, entry, 'draft.json'))) { const d = await this.get(entry); drafts.push({ id: d.id, title: d.meta.title || '未命名文章', updatedAt: d.updatedAt, sourcePath: d.sourcePath, lastPublished: d.lastPublished }); }
+    for (const entry of await fs.readdir(folder)) if (await exists(path.join(folder, entry, 'draft.json'))) {
+      const d = await this.get(entry);
+      const rawExcerpt = (d.meta.description || d.body.replace(/```[\s\S]*?```/g, ' ').replace(/[#>*_`~\-\[\]()!$]/g, ' ')).replace(/\s+/g, ' ').trim();
+      drafts.push({
+        id: d.id,
+        title: d.meta.title || '未命名文章',
+        updatedAt: d.updatedAt,
+        version: d.version,
+        categories: d.meta.categories || [],
+        excerpt: rawExcerpt.slice(0, 120),
+        wordCount: d.body.length,
+        sourcePath: d.sourcePath,
+        lastPublished: d.lastPublished
+      });
+    }
     const posts = [];
     for (const entry of await fs.readdir(path.join(this.root, '_posts'))) {
       if (!/^\d{4}-\d{2}-\d{2}-.+\.md$/.test(entry)) continue;
