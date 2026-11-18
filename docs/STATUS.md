@@ -1,6 +1,17 @@
 # 项目状态
 
-## 2026-11-18 阶段二：公开博客书卷杂志风重塑及「关于我 / 全部文章 / 主题分类 / 标签索引」全套精修（本地验证通过，未推送）
+## 2026-11-18 阶段三：双端重构同步推送 GitHub 与线上 Pages 部署验收通过（已发布）
+
+- 用户审阅确认公开博客全部页面效果后明确授权同步推送至 GitHub：
+  - 先以 `Sync-Blog.ps1 -CheckOnly` 复核 50 项变更文件，确认 `_posts/` 仅含正式文章 `2026-10-26-fg-moe.md`（本地试写草稿《如何与 AI 交互：从单次指令到高带宽认知协作》严格保留在忽略目录 `.local/studio/drafts/`），不含 `.local/`、`_site/`、凭据或私密材料。
+  - 执行 `Sync-Blog.ps1 -Yes` 提交并推送至 `origin/main`（提交 [`19d889887726c5b156cd62c578d74a2ab36edd80`](https://github.com/hlcy-404/hlcy-404.github.io/commit/19d889887726c5b156cd62c578d74a2ab36edd80)）。
+- GitHub Actions 与线上浏览器分层验收：
+  - **GitHub Actions 构建与部署**：工作流 `Build and Deploy`（运行编号 [`44248640671`](https://github.com/hlcy-404/hlcy-404.github.io/actions/runs/44248640671)）中 `build`（含生产构建与 `htmlproofer`）与 `deploy` 两个作业均以 `success` 完成。
+  - **线上页面实测**（`https://hlcy-404.github.io/`）：在内置浏览器完成 `1440×900` 日间/夜间模式与 `375×812` 窄屏实测——首页（温润纸感首屏、层叠等高线生长插画 `Fig. 01`、`沿途的记录`、底部三视角面板）、`/archives/`（全部文章编年目录）、`/categories/`（主题分类专题卷宗）、`/tags/`（标签索引词条表）、`/about/`（作者名片、细线求学时间轴、`FG-MoE` 论文铭牌与双列项目卡）、`/friends/`（`360px` 轻量肖像正常加载）及 `/posts/fg-moe/` 均 HTTP `200` 正常渲染且无横向溢出；访问 `/tools/studio/` 返回 `404`，确认本地写作工具未作为静态页面暴露。
+  - **验收边界**：本次为同一桌面环境内置浏览器的线上尺寸与交互核验，不等同于跨物理真机或全部外部网络环境测试；已打开过旧版页面的外部浏览器若命中旧 Service Worker 缓存，按提示刷新更新即可。
+- 下一步：在本地写作工作台（`studio.cmd` / `http://127.0.0.1:4010/`）继续日常文稿创作，定稿后按既有流程发布；离机备份转存仍按 `docs/BACKUP-RECOVERY.md` 待外部设备确认后执行。
+
+## 2026-11-18 阶段二：公开博客书卷杂志风重塑及「关于我 / 全部文章 / 主题分类 / 标签索引」全套精修（已随 19d8898 发布）
 
 - 用户审阅首版冷灰高密度卡片首页后指出信息密度偏高、缺乏引人入胜的氛围感与阅读欲望；按用户明确锁定的“温润画廊纸感与书卷杂志风 + 首屏做减法留足意境 + 学历与项目收进关于页”完成全站重塑（`_layouts/atlas.html`、`_layouts/archives.html`、`_layouts/categories.html`、`_layouts/tags.html`、`_layouts/category.html`、`_layouts/tag.html`、`_includes/atlas-index-header.html`、`_includes/atlas-taxonomy-detail.html`、`_includes/atlas-horizon-art.html`、`_includes/atlas-navigation.html`、`_includes/atlas-exploration.html`、`_includes/metadata-hook.html`、`_data/atlas.yml`、`_tabs/about.md`、`_tabs/archives.md`、`_tabs/categories.md`、`_tabs/tags.md`、`_tabs/friends.html`、`assets/css/atlas.css`、`assets/js/atlas.js`）。
 - 按用户审阅并确认的 **5 项「关于我」优化** 完成深度精修：
